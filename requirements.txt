@@ -2,4 +2,3 @@ streamlit
 pandas
 requests
 BeautifulSoup4
-urllib.parse
