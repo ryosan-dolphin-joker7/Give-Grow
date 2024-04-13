@@ -1,4 +1,3 @@
-import streamlit as st
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -95,24 +94,3 @@ if 'df_additional' in st.session_state and not st.session_state.df_additional.em
     meigen_options = st.session_state.df_additional['Text'].tolist()
     selected_meigen = st.selectbox('名言を選択してください', meigen_options, index=meigen_options.index(st.session_state.selected_meigen) if st.session_state.selected_meigen in meigen_options else 0)
     st.session_state.selected_meigen = selected_meigen  # 選択された名言を更新
-
-# ボタンを押下したら名言のテキスト情報を取得して変数に格納する
-if st.button('名言のテキスト情報を取得して変数に格納'):         
-        st.write(st.session_state.selected_meigen)
-
-if st.button('名言をslackに投稿'):         
-    text_to_slack.send_slack_message(selected_meigen)
-
-
-# GPTで生成する関数を実行
-if st.button('名言をGPTで加工'):
-    output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen)
-    st.session_state.output_content_text = output_content_text
-
-# Slackに投稿
-if st.button('GPTで改編した名言をslackに投稿'):
-    # st.session_stateからoutput_content_textを参照して使用
-    if 'output_content_text' in st.session_state:
-        text_to_slack.send_slack_message(st.session_state.output_content_text)
-    else:
-        st.write("加工された名言がありません。先に「名言をGPTで加工」ボタンを押してください。")
