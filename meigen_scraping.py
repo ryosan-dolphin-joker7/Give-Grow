@@ -86,9 +86,11 @@ from dotenv import load_dotenv
 # .envファイルから環境変数を読み込む（ローカル環境のみ）
 if not os.getenv("CI"):
     load_dotenv()
-
 # 環境変数を使用
 Slack_API_KEY = os.getenv("Slack_API_KEY")
+
+st.write(Slack_API_KEY)
+
 
 import requests
 
