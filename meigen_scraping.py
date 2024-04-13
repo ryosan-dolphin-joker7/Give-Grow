@@ -3,6 +3,11 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+# 別ファイルに関数を記載して実行するための文
+# fromにディレクトリ名、importにファイル名を記載する
+# 関数を使うときは、ファイル名.関数名()でOK
+from services import meigen_gpt,text_to_slack
+
 # スクレイピング関数の定義
 def scrape_page(url):
     response = requests.get(url)
@@ -91,47 +96,13 @@ if 'df_additional' in st.session_state and not st.session_state.df_additional.em
     selected_meigen = st.selectbox('名言を選択してください', meigen_options, index=meigen_options.index(st.session_state.selected_meigen) if st.session_state.selected_meigen in meigen_options else 0)
     st.session_state.selected_meigen = selected_meigen  # 選択された名言を更新
 
+# ボタンを押下したら名言のテキスト情報を取得して変数に格納する
 if st.button('名言のテキスト情報を取得して変数に格納'):         
-        # 名言の表示
         st.write(st.session_state.selected_meigen)
 
-import os
-from dotenv import load_dotenv
-
-# .envファイルから環境変数を読み込む（ローカル環境のみ）
-if not os.getenv("CI"):
-    load_dotenv()
-# 環境変数を使用
-SLACK_API_KEY = os.getenv("SLACK_API_KEY")
-
-# SLACK_API_KEYを取得できているかを確認したいときは、以下のコードを有効にして表示させます
-# st.write(SLACK_API_KEY)
-
-
-def send_slack_message(output_content_text, token=SLACK_API_KEY, channel='#charger_akari'):
-    """
-    Slackの指定されたチャンネルにメッセージを送信します。
-
-    Parameters:
-        output_content_text (str): 送信するメッセージの内容。
-        token (str): Slack APIの認証トークン。デフォルトは'xxx'。
-        channel (str): メッセージを送信するチャンネル。デフォルトは'#charger_akari'。
-    """
-    url = "https://slack.com/api/chat.postMessage"
-    headers = {"Authorization": "Bearer " + token}
-    data = {
-        'channel': channel,
-        'text': output_content_text
-    }
-    response = requests.post(url, headers=headers, data=data)
-    print("Return: ", response.json())
-
-
 if st.button('名言をslackに投稿'):         
-    # 名言の表示
-    send_slack_message(selected_meigen)
+    text_to_slack.send_slack_message(selected_meigen)
 
-from services import meigen_gpt
 
 # GPTで生成する関数を実行
 if st.button('名言をGPTで加工'):
@@ -142,6 +113,6 @@ if st.button('名言をGPTで加工'):
 if st.button('GPTで改編した名言をslackに投稿'):
     # st.session_stateからoutput_content_textを参照して使用
     if 'output_content_text' in st.session_state:
-        send_slack_message(st.session_state.output_content_text)
+        text_to_slack.send_slack_message(st.session_state.output_content_text)
     else:
         st.write("加工された名言がありません。先に「名言をGPTで加工」ボタンを押してください。")
