@@ -1,0 +1,28 @@
+name: Run Python Script
+
+on:
+  push:
+    branches:
+      - main # または実行したいブランチ
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8" # 使用するPythonのバージョン
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests python-dotenv  # 必要なパッケージをインストール
+
+      - name: Run script
+        env:
+          SLACK_API_KEY: ${{ secrets.SLACK_API_KEY }} # Secretから環境変数を設定
+        run: |
+          python your_script.py
