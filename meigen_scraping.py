@@ -113,3 +113,4 @@ def send_slack_message(output_content_text, token=Slack_API_KEY, channel='#charg
 
 if st.button('名言をslackに投稿'):         
         # 名言の表示
+        send_slack_message(selected_meigen)
