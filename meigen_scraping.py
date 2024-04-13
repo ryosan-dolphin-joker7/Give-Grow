@@ -108,8 +108,6 @@ SLACK_API_KEY = os.getenv("SLACK_API_KEY")
 # st.write(SLACK_API_KEY)
 
 
-import requests
-
 def send_slack_message(output_content_text, token=SLACK_API_KEY, channel='#charger_akari'):
     """
     Slackの指定されたチャンネルにメッセージを送信します。
@@ -130,5 +128,20 @@ def send_slack_message(output_content_text, token=SLACK_API_KEY, channel='#charg
 
 
 if st.button('名言をslackに投稿'):         
-        # 名言の表示
-        send_slack_message(selected_meigen)
+    # 名言の表示
+    send_slack_message(selected_meigen)
+
+from services import meigen_gpt
+
+# GPTで生成する関数を実行
+if st.button('名言をGPTで加工'):
+    output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen)
+    st.session_state.output_content_text = output_content_text
+
+# Slackに投稿
+if st.button('GPTで改編した名言をslackに投稿'):
+    # st.session_stateからoutput_content_textを参照して使用
+    if 'output_content_text' in st.session_state:
+        send_slack_message(st.session_state.output_content_text)
+    else:
+        st.write("加工された名言がありません。先に「名言をGPTで加工」ボタンを押してください。")
