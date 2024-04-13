@@ -18,7 +18,7 @@ def scrape_page(url):
             })
     return urls_titles
 
-# 追加情報を抽出する関数
+# ページから名言を抽出する関数
 def extract_additional_info(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -29,9 +29,9 @@ def extract_additional_info(url):
     if len(df) > 2:
         df = df.iloc[:-2]
     if len(df) > 5:
-        df = df.sample(n=5, random_state=1)
+        df = df.sample(n=5)
     else:
-        df = df.sample(n=len(df), random_state=1)
+        df = df.sample(n=len(df))
 
     return df
 
@@ -60,7 +60,7 @@ if 'scraped_data' in st.session_state and st.session_state.scraped_data:
     title_options = [item['Title'] for item in st.session_state.scraped_data]
     selected_title = st.selectbox('Title を選択してください', options=title_options)
     
-if st.button('追加情報を抽出'):
+if st.button('ページから名言を抽出'):
     selected_url = next((item['URL'] for item in st.session_state.scraped_data if item['Title'] == selected_title), None)
     if selected_url:
         st.session_state.df_additional = extract_additional_info(selected_url)
@@ -76,7 +76,7 @@ if 'df_additional' in st.session_state and not st.session_state.df_additional.em
     selected_meigen = st.selectbox('名言を選択してください', meigen_options, index=meigen_options.index(st.session_state.selected_meigen) if st.session_state.selected_meigen in meigen_options else 0)
     st.session_state.selected_meigen = selected_meigen  # 選択された名言を更新
 
-if st.button('名言を取得'):         
+if st.button('名言のテキスト情報を取得して変数に格納'):         
         # 名言の表示
         st.write(st.session_state.selected_meigen)
 
