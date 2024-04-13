@@ -89,7 +89,8 @@ if not os.getenv("CI"):
 # 環境変数を使用
 SLACK_API_KEY = os.getenv("SLACK_API_KEY")
 
-st.write(SLACK_API_KEY)
+# SLACK_API_KEYを取得できているかを確認したいときは、以下のコードを有効にして表示させます
+# st.write(SLACK_API_KEY)
 
 
 import requests
