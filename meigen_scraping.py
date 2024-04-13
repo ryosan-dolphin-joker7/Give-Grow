@@ -79,3 +79,37 @@ if 'df_additional' in st.session_state and not st.session_state.df_additional.em
 if st.button('名言を取得'):         
         # 名言の表示
         st.write(st.session_state.selected_meigen)
+
+import os
+from dotenv import load_dotenv
+
+# .envファイルから環境変数を読み込む（ローカル環境のみ）
+if not os.getenv("CI"):
+    load_dotenv()
+
+# 環境変数を使用
+Slack_API_KEY = os.getenv("Slack_API_KEY")
+
+import requests
+
+def send_slack_message(output_content_text, token=Slack_API_KEY, channel='#charger_akari'):
+    """
+    Slackの指定されたチャンネルにメッセージを送信します。
+
+    Parameters:
+        output_content_text (str): 送信するメッセージの内容。
+        token (str): Slack APIの認証トークン。デフォルトは'xxx'。
+        channel (str): メッセージを送信するチャンネル。デフォルトは'#charger_akari'。
+    """
+    url = "https://slack.com/api/chat.postMessage"
+    headers = {"Authorization": "Bearer " + token}
+    data = {
+        'channel': channel,
+        'text': output_content_text
+    }
+    response = requests.post(url, headers=headers, data=data)
+    print("Return: ", response.json())
+
+
+if st.button('名言をslackに投稿'):         
+        # 名言の表示
