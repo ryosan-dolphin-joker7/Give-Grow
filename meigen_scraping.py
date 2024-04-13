@@ -87,14 +87,14 @@ from dotenv import load_dotenv
 if not os.getenv("CI"):
     load_dotenv()
 # 環境変数を使用
-Slack_API_KEY = os.getenv("Slack_API_KEY")
+SLACK_API_KEY = os.getenv("Slack_API_KEY")
 
-st.write(Slack_API_KEY)
+st.write(SLACK_API_KEY)
 
 
 import requests
 
-def send_slack_message(output_content_text, token=Slack_API_KEY, channel='#charger_akari'):
+def send_slack_message(output_content_text, token=SLACK_API_KEY, channel='#charger_akari'):
     """
     Slackの指定されたチャンネルにメッセージを送信します。
 
