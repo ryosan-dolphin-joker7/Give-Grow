@@ -25,4 +25,4 @@ jobs:
         env:
           SLACK_API_KEY: ${{ secrets.SLACK_API_KEY }} # Secretから環境変数を設定
         run: |
-          python your_script.py
+          python meigen_scraping.py
