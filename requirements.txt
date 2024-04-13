@@ -3,3 +3,4 @@ pandas
 requests
 BeautifulSoup4
 python-dotenv
+openai
