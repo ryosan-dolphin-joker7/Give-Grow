@@ -87,7 +87,7 @@ from dotenv import load_dotenv
 if not os.getenv("CI"):
     load_dotenv()
 # 環境変数を使用
-SLACK_API_KEY = os.getenv("Slack_API_KEY")
+SLACK_API_KEY = os.getenv("SLACK_API_KEY")
 
 st.write(SLACK_API_KEY)
 
