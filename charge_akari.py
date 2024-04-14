@@ -129,7 +129,8 @@ if user_msg:
         bot_response = f"あなたの悩みは「{user_msg}」なんですね。\r\nボタンを押して名言を加工しましょう"
     else:
         # 変数が存在し、かつ空でない場合の既定の応答
-        bot_response = "申し訳ありませんが、その悩みには答えられません。"
+        st.session_state.content_text_to_gpt = user_msg
+        bot_response = f"あなたの悩みを「{user_msg}」に変更しました。\r\nボタンを押して名言を加工しましょう"
 
     # ユーザーのメッセージをチャット履歴に追加
     st.session_state.chat_log.append({"name": USER_NAME, "msg": user_msg})
@@ -141,26 +142,31 @@ else:
     bot_response = "何か入力してください。"
 
 
+# GPTで生成する関数を実行します
+if st.sidebar.button('GPTで名言を加工'):
+    output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen,st.session_state.content_text_to_gpt)
+    st.session_state.output_content_text = output_content_text
+    st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "加工した名言をSlackに投稿しましょう。"})
+
+# slack関数を使って変数に格納したテキストをslackに送ります
+if st.sidebar.button('加工前の名言をslackに投稿'): 
+    if 'output_content_text' in st.session_state:
+        text_to_slack.send_slack_message(st.session_state.selected_meigen)
+    else:
+        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "元にする名言が選択されていません。スクレイピングして名言を取得してください。"})
+
+# 引数にテキストを入れるとSlackに投稿します
+# チャンネルは「@charger_akari」で固定です。（詳細はtext_to_slack.pyを参照してください）
+if st.sidebar.button('GPTで加工した名言をslackに投稿'):
+    # st.session_stateからoutput_content_textを参照して使用
+    if 'output_content_text' in st.session_state:
+        text_to_slack.send_slack_message(st.session_state.output_content_text)
+    else:
+        # アシスタントの応答をチャット履歴に追加
+        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "加工された名言がありません。先に「名言をGPTで加工」ボタンを押してください。"})
+
 # チャット履歴を表示
 for chat in st.session_state.chat_log:
     avatar = avatar_img_dict.get(chat["name"], None)
     with st.chat_message(chat["name"], avatar=avatar):
         st.write(chat["msg"])
-
-# GPTで生成する関数を実行します
-if st.button('GPTで名言を作ります'):
-    output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen,st.session_state.content_text_to_gpt)
-    st.session_state.output_content_text = output_content_text
-
-# slack関数を使って変数に格納したテキストをslackに送ります
-if st.button('スクレイピングした名言をslackに投稿'):         
-    text_to_slack.send_slack_message(selected_meigen)
-
-# 引数にテキストを入れるとSlackに投稿します
-# チャンネルは「@charger_akari」で固定です。（詳細はtext_to_slack.pyを参照してください）
-if st.button('GPTで加工した名言をslackに投稿'):
-    # st.session_stateからoutput_content_textを参照して使用
-    if 'output_content_text' in st.session_state:
-        text_to_slack.send_slack_message(st.session_state.output_content_text)
-    else:
-        st.write("加工された名言がありません。先に「名言をGPTで加工」ボタンを押してください。")
