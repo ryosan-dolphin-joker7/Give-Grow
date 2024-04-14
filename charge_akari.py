@@ -79,35 +79,9 @@ st.write('取得した名言を変数に格納します')
 if st.button('名言のテキスト情報を取得して変数に格納'):         
         st.write(st.session_state.selected_meigen)
 
-# slack関数を使って変数に格納したテキストをslackに送ります
-st.header('3.slackにスクレイピングした名言を送ります')
-st.write('変数に格納した名言をslackに送ります')
-if st.button('名言をslackに投稿'):         
-    text_to_slack.send_slack_message(selected_meigen)
-
-
-# GPTで生成する関数を実行します
-st.header('4.OpenAI_APIを使って名言をTech0風にします')
-if st.button('名言をGPTで加工'):
-    output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen,"")
-    st.session_state.output_content_text = output_content_text
-
-# 引数にテキストを入れるとSlackに投稿します
-# チャンネルは「@charger_akari」で固定です。（詳細はtext_to_slack.pyを参照してください）
-st.header('5.slackにTech0風の名言を送ります')
-if st.button('GPTで改編した名言をslackに投稿'):
-    # st.session_stateからoutput_content_textを参照して使用
-    if 'output_content_text' in st.session_state:
-        text_to_slack.send_slack_message(st.session_state.output_content_text)
-    else:
-        st.write("加工された名言がありません。先に「名言をGPTで加工」ボタンを押してください。")
-
-
 
 # タイトルを設定する
 st.header("励ましBOT 元気チャージャーあかりちゃん")
-st.write("あなたの悩みを教えて下さい")
-
 
 # 定数定義
 USER_NAME = "あなた"
@@ -136,11 +110,15 @@ response = "分かりました。"
 assistant_msg = "続けて入力してください"
 
 # ユーザーの入力が送信された際に実行される処理
-user_msg = st.chat_input("何に悩んでいますか？")
+user_msg = st.text_input("何に悩んでいますか？")
 
 # チャット履歴を保存するセッションステートの初期化
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
+
+# 'selected_meigen'がst.session_stateに存在しない、または空の場合、新たに設定する
+if 'selected_meigen' not in st.session_state or not st.session_state.selected_meigen:
+    st.session_state.selected_meigen = ""
 
 # ユーザーの入力が送信された際に実行される処理
 if user_msg:
@@ -148,7 +126,7 @@ if user_msg:
     if 'content_text_to_gpt' not in st.session_state or not st.session_state.content_text_to_gpt:
         # 変数が存在しない、または空である場合、ユーザーのメッセージをcontent_text_to_gptに設定
         st.session_state.content_text_to_gpt = user_msg
-        bot_response = f"あなたの悩みは「{user_msg}」なんですね。"
+        bot_response = f"あなたの悩みは「{user_msg}」なんですね。\r\nボタンを押して名言を加工しましょう"
     else:
         # 変数が存在し、かつ空でない場合の既定の応答
         bot_response = "申し訳ありませんが、その悩みには答えられません。"
@@ -169,38 +147,20 @@ for chat in st.session_state.chat_log:
     with st.chat_message(chat["name"], avatar=avatar):
         st.write(chat["msg"])
 
-
-
-from datetime import datetime
-# ユーザーの入力を受け付ける
-user_input = st.chat_input("何について知りたいですか？（例：「天気」、「日付」）:", key="user_input")
-
-# ユーザーの入力が送信された際に実行される処理
-if user_input:
-    # ユーザーのメッセージをチャット履歴に追加
-    st.session_state.chat_history.append({"user": "あなた", "message": user_input})
-    
-    # ボットの応答を生成
-    if user_input == "天気":
-        bot_response = "今日の天気は晴れのち曇りです。"
-    elif user_input == "日付":
-        bot_response = f"今日の日付は{datetime.now().strftime('%Y年%m月%d日')}です。"
-    else:
-        bot_response = "申し訳ありませんが、その質問には答えられません。"
-    
-    # ボットの応答をチャット履歴に追加
-    st.session_state.chat_history.append({"user": "チャットボット", "message": bot_response})
-
-# チャット履歴を表示
-for chat in st.session_state.chat_history:
-    with st.container():
-        st.write(f'{chat["user"]}: {chat["message"]}')
-
-selected_meigen=""
-st.session_state.selected_meigen = selected_meigen
-
 # GPTで生成する関数を実行します
-st.header('OpenAI_APIを使って名言をTech0風にします')
-if st.button('名言をGPTで加工する'):
-    output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen,"")
+if st.button('GPTで名言を作ります'):
+    output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen,st.session_state.content_text_to_gpt)
     st.session_state.output_content_text = output_content_text
+
+# slack関数を使って変数に格納したテキストをslackに送ります
+if st.button('スクレイピングした名言をslackに投稿'):         
+    text_to_slack.send_slack_message(selected_meigen)
+
+# 引数にテキストを入れるとSlackに投稿します
+# チャンネルは「@charger_akari」で固定です。（詳細はtext_to_slack.pyを参照してください）
+if st.button('GPTで加工した名言をslackに投稿'):
+    # st.session_stateからoutput_content_textを参照して使用
+    if 'output_content_text' in st.session_state:
+        text_to_slack.send_slack_message(st.session_state.output_content_text)
+    else:
+        st.write("加工された名言がありません。先に「名言をGPTで加工」ボタンを押してください。")
