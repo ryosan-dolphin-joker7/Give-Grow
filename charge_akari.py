@@ -146,12 +146,13 @@ else:
 if st.sidebar.button('GPTで名言を加工'):
     output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen,st.session_state.content_text_to_gpt)
     st.session_state.output_content_text = output_content_text
-    st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "加工した名言をSlackに投稿しましょう。"})
+    st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "加工が完了しました。加工した名言をSlackに投稿しましょう。"})
 
 # slack関数を使って変数に格納したテキストをslackに送ります
 if st.sidebar.button('加工前の名言をslackに投稿'): 
     if 'output_content_text' in st.session_state:
         text_to_slack.send_slack_message(st.session_state.selected_meigen)
+        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "slackに加工前の名言を投稿しました!"})
     else:
         st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "元にする名言が選択されていません。スクレイピングして名言を取得してください。"})
 
@@ -161,6 +162,7 @@ if st.sidebar.button('GPTで加工した名言をslackに投稿'):
     # st.session_stateからoutput_content_textを参照して使用
     if 'output_content_text' in st.session_state:
         text_to_slack.send_slack_message(st.session_state.output_content_text)
+        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "slackに加工後の名言を投稿しました!"})
     else:
         # アシスタントの応答をチャット履歴に追加
         st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "加工された名言がありません。先に「名言をGPTで加工」ボタンを押してください。"})
