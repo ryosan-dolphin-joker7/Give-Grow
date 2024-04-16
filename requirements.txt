@@ -4,4 +4,4 @@ requests
 BeautifulSoup4
 python-dotenv
 openai
-googleapiclient
+google-api-python-client
