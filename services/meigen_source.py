@@ -13,12 +13,14 @@ GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 CUSTOM_SEARCH_ENGINE_ID = os.getenv('CUSTOM_SEARCH_ENGINE_ID')
 
 
-def fetch_image_url(keyword):
-    print(f"Fetching image URL for keyword: {keyword}")
+def fetch_image_url(keyword, add_terms="画像"):
+    # 検索キーワードに追加の用語を組み込む
+    full_keyword = f"{keyword} {add_terms}"
+    print(f"Fetching image URL for keyword: {full_keyword}")
     service = build("customsearch", "v1", developerKey=GOOGLE_API_KEY)
     try:
         result = service.cse().list(
-            q=keyword,
+            q=full_keyword,  # 更新された検索キーワード
             cx=CUSTOM_SEARCH_ENGINE_ID,
             searchType='image',
             num=1
