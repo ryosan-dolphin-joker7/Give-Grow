@@ -1,3 +1,5 @@
 # .envファイルを除外
 .env
 services\__pycache__
+__pycache__/
+*.pyc
