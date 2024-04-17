@@ -18,8 +18,6 @@ def fetch_image_url(keyword, add_terms="画像"):
     full_keyword = f"{keyword} {add_terms}"
     print(f"Fetching image URL for keyword: {full_keyword}")
     service = build("customsearch", "v1", developerKey=GOOGLE_API_KEY)
-    st.write(GOOGLE_API_KEY)
-    st.write(CUSTOM_SEARCH_ENGINE_ID)
     try:
         result = service.cse().list(
             q=full_keyword,  # 更新された検索キーワード
