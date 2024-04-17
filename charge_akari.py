@@ -136,10 +136,31 @@ if user_msg:
         # 変数が存在しない、または空である場合、ユーザーのメッセージをcontent_text_to_gptに設定
         st.session_state.content_text_to_gpt = user_msg
         bot_response = f"あなたの悩みは「{user_msg}」なんですね。\r\nボタンを押して名言を加工しましょう"
-    else:
-        # 変数が存在し、かつ空でない場合の既定の応答
+    elif 'content_text_to_gpt' not in st.session_state or not st.session_state.content_text_to_gpt:
+        # 変数が存在しない、または空である場合、ユーザーのメッセージを新規に設定
         st.session_state.content_text_to_gpt = user_msg
-        bot_response = f"あなたの悩みを「{user_msg}」に変更しました。\r\nボタンを押して名言を加工しましょう"
+        bot_response = f"あなたの悩みは「{user_msg}」なんですね。\r\nボタンを押して名言を加工しましょう"
+    else:
+        # 変数が存在し、ユーザーのメッセージが前回と同じ場合、メッセージを変更せずに既定の応答を行う
+        bot_response = "同じ悩みが既に設定されています。\r\nボタンを押して名言を加工しましょう"
+
+# ユーザーの入力が送信された際に実行される処理
+if user_msg:
+    # 'content_text_to_gpt'変数がst.session_state内に存在しない場合、または新しいメッセージが前回のものと異なる場合
+    # ユーザーが何も入力していない場合、または同じメッセージを再度入力した場合は、何も処理しない
+    if 'content_text_to_gpt' not in st.session_state or (st.session_state.content_text_to_gpt != user_msg):
+        # ユーザーが初めてメッセージを入力した場合
+        if 'content_text_to_gpt' not in st.session_state:
+            bot_response = f"あなたの悩みは「{user_msg}」なんですね。ボタンを押して名言を加工しましょう"
+        # ユーザーが新しいメッセージを入力し、それが前回のメッセージと異なる場合
+        else:
+            bot_response = f"あなたの悩みを「{user_msg}」に変更しました。ボタンを押して名言を加工しましょう"
+        
+        # st.session_stateの更新
+        st.session_state.content_text_to_gpt = user_msg
+
+        # 応答メッセージの表示
+        st.write(bot_response)
 
     # ユーザーのメッセージをチャット履歴に追加
     st.session_state.chat_log.append({"name": USER_NAME, "msg": user_msg})
