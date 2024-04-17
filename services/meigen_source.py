@@ -12,6 +12,8 @@ if not os.getenv("CI"):
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 CUSTOM_SEARCH_ENGINE_ID = os.getenv('CUSTOM_SEARCH_ENGINE_ID')
 
+st.write(GOOGLE_API_KEY)
+st.write(CUSTOM_SEARCH_ENGINE_ID)
 
 def fetch_image_url(keyword, add_terms="画像"):
     # 検索キーワードに追加の用語を組み込む

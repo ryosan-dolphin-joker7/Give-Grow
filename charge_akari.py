@@ -78,9 +78,10 @@ if 'df_additional' in st.session_state and not st.session_state.df_additional.em
 
 
 # ボタンを押下したら名言のテキスト情報を取得して変数に格納し、画像を検索して表示します
-if st.button('名言のテキスト情報を取得して変数に格納'):
+if st.button('名言のテキスト情報から画像を検索'):
     print("Selected quote:", st.session_state.selected_meigen)  # Debug: print the selected quote
     image_url = meigen_source.fetch_image_url(st.session_state.selected_meigen)
+    st.write(image_url)
     if image_url:
         st.image(image_url, caption=f"名言「{st.session_state.selected_meigen}」に関連する画像")
     else:
