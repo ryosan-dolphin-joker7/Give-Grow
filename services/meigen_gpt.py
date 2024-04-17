@@ -11,10 +11,18 @@ if not os.getenv("CI"):
 # 環境変数を使用
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-def make_meigen(content_meigen_to_gpt):
+def make_meigen(content_meigen_to_gpt,content_text_to_gpt):
 
     # openAIの機能をclientに代入
     client = OpenAI()
+    
+    # 悩みについて
+    if content_text_to_gpt == "":
+        content_text_to_gpt = "環境構築が難しくてツライことです。"
+
+    # 名言について
+    if content_meigen_to_gpt == "":
+        content_meigen_to_gpt = "でも、もしオレがここであきらめたら一生会えない気がする、だから退かない"
 
     # chatGPTにリクエストするためのメソッドを設定。引数には書いてほしい内容と文章のテイストと最大文字数を指定
     def run_gpt(content_text_to_gpt,content_kind_of_to_gpt,content_maxStr_to_gpt,role_gpt,user_gpt):
@@ -42,8 +50,7 @@ def make_meigen(content_meigen_to_gpt):
     # ユーザー
     user_gpt = "私はプログラミング学習に悩んでいる人です。"
 
-    # 悩みについて
-    content_text_to_gpt = "環境構築が難しくてツライことです。"
+
 
     # 書かせたい構成
     content_contents_to_gpt = "私が元気になるように励ましてください。"
