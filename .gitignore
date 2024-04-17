@@ -1,5 +1,9 @@
 # .envファイルを除外
 .env
-services\__pycache__
-__pycache__/
+
+# バイトコンパイルされたPythonファイルを無視
 *.pyc
+
+# __pycache__ディレクトリを無視
+__pycache__/
+services\__pycache__
