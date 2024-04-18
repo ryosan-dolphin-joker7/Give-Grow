@@ -15,6 +15,7 @@ from services import meigen_gpt,text_to_slack,meigen_scraping,meigen_source
 # meigen_gpt        ：テキストをGPTに送る関数です
 # text_to_slack     ：slackにテキストを送る関数です
 # meigen_scraping   ：ページから名言を抽出する関数です
+# meigen_source     :名言から画像を取得する関数です
 
 
 
