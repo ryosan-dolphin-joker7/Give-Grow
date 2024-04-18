@@ -20,8 +20,9 @@ from services import meigen_gpt,text_to_slack,meigen_scraping,meigen_source
 
 st.set_page_config(layout="wide")
 st.title('漫画の名言スクレイピング')
+st.image('img/trouble_ programming.png', caption='プログラミングに悩む姿', width=300)
 
-st.header('1.スクレイピングする名言のページを選択します')
+st.sidebar.header('1.名言をスクレイピングします')
 # どのページから名言を取得するかを選択します。
 urls = {
     '登場人物の名言': 'https://bontoku.com/category/meigen-bonpu/chara-meigen',
@@ -30,20 +31,18 @@ urls = {
     '偉人の名言': 'https://bontoku.com/category/meigen-bonpu/ijin',
     '映画の名言': 'https://bontoku.com/category/meigen-bonpu/movie-meigen'
 }
-selected_key = st.selectbox('どの名言を取得するか選択してください', list(urls.keys()))
+selected_key = st.sidebar.selectbox('どの名言を取得するか選択してください', list(urls.keys()))
 selected_url = urls[selected_key]
 
 # 「〇〇の名言」は複数ページで構成されているので、スクレイピングをする最大ページ数を選択します。
 # 最大ページ数を設定しているのは、webサイトへの負荷低減と処理を簡素化してテストをしやすくするためです。
-max_pages = st.number_input('取得する最大ページ数を入力してください:', min_value=1, value=1, step=1)
+max_pages = st.sidebar.number_input('取得する最大ページ数を入力してください:', min_value=1, value=1, step=1)
 
 
 # ボタンを押してスクレイピングを開始します
 # start_scraping関数の引数にurlと最大ページ数を指定するとスクレイピングを実行します
 # スクレイピングした結果をデータフレームに格納して表示します
-st.header('2.スクレイピングを実行します')
-st.write('取得する名言と最大ページ数を選択したらボタンを押してください')
-if st.button('スクレイピング開始'):
+if st.sidebar.button('スクレイピング開始'):
     scraped_data = meigen_scraping.start_scraping(selected_url, int(max_pages))
     if scraped_data:
         # スクレイピング結果をデータフレームに変換して表示
@@ -173,6 +172,7 @@ else:
 
 
 # GPTで生成する関数を実行します
+st.sidebar.header('名言を加工してSlackに投稿します')
 if st.sidebar.button('GPTで名言を加工'):
     output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen,st.session_state.content_text_to_gpt)
     st.session_state.output_content_text = output_content_text
