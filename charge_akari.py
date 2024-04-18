@@ -31,8 +31,8 @@ urls = {
     '偉人の名言': 'https://bontoku.com/category/meigen-bonpu/ijin',
     '映画の名言': 'https://bontoku.com/category/meigen-bonpu/movie-meigen'
 }
-selected_key = st.sidebar.selectbox('どの名言を取得するか選択してください', list(urls.keys()))
-selected_url = urls[selected_key]
+st.session_state.selected_url = urls[st.sidebar.selectbox('どの名言を取得するか選択してください', list(urls.keys()))]
+
 
 # 「〇〇の名言」は複数ページで構成されているので、スクレイピングをする最大ページ数を選択します。
 # 最大ページ数を設定しているのは、webサイトへの負荷低減と処理を簡素化してテストをしやすくするためです。
@@ -43,22 +43,22 @@ max_pages = st.sidebar.number_input('取得する最大ページ数を入力し�
 # start_scraping関数の引数にurlと最大ページ数を指定するとスクレイピングを実行します
 # スクレイピングした結果をデータフレームに格納して表示します
 if st.sidebar.button('スクレイピング開始'):
-    scraped_data = meigen_scraping.start_scraping(selected_url, int(max_pages))
+    scraped_data = meigen_scraping.start_scraping(st.session_state.selected_url, int(max_pages))
     if scraped_data:
         # スクレイピング結果をデータフレームに変換して表示
         st.session_state.scraped_data = pd.DataFrame(scraped_data)
-        st.dataframe(st.session_state.scraped_data, use_container_width=True)
+        #st.dataframe(st.session_state.scraped_data, use_container_width=True)
     else:
         st.write("データが見つかりませんでした。")
 
-# 名言を取得するページを選択してスクレイピングを実行します
+# 名言を取得するページを選択します
 if 'scraped_data' in st.session_state and not st.session_state.scraped_data.empty:
     title_options = st.session_state.scraped_data['Title'].tolist()
-    selected_title = st.selectbox('名言を取得するページを選択してください', options=title_options)
+    selected_title = st.sidebar.selectbox('名言を取得するページを選択してください', options=title_options)
 
 # 選択したページから名言のテキスト情報を取得します
 if 'scraped_data' in st.session_state and 'selected_title' in locals():
-    if st.button('ページから名言を抽出'):
+    if st.sidebar.button('ページから名言を抽出'):
         selected_url = st.session_state.scraped_data[st.session_state.scraped_data['Title'] == selected_title]['URL'].iloc[0]
         st.session_state.df_additional = meigen_scraping.extract_additional_info(selected_url)
 
@@ -130,21 +130,6 @@ if 'selected_meigen' not in st.session_state or not st.session_state.selected_me
 
 # ユーザーの入力が送信された際に実行される処理
 if user_msg:
-    # content_text_to_gpt変数がst.session_state内に存在しない、または空であるかをチェック
-    if 'content_text_to_gpt' not in st.session_state or not st.session_state.content_text_to_gpt:
-        # 変数が存在しない、または空である場合、ユーザーのメッセージをcontent_text_to_gptに設定
-        st.session_state.content_text_to_gpt = user_msg
-        bot_response = f"あなたの悩みは「{user_msg}」なんですね。\r\nボタンを押して名言を加工しましょう"
-    elif 'content_text_to_gpt' not in st.session_state or not st.session_state.content_text_to_gpt:
-        # 変数が存在しない、または空である場合、ユーザーのメッセージを新規に設定
-        st.session_state.content_text_to_gpt = user_msg
-        bot_response = f"あなたの悩みは「{user_msg}」なんですね。\r\nボタンを押して名言を加工しましょう"
-    else:
-        # 変数が存在し、ユーザーのメッセージが前回と同じ場合、メッセージを変更せずに既定の応答を行う
-        bot_response = "同じ悩みが既に設定されています。\r\nボタンを押して名言を加工しましょう"
-
-# ユーザーの入力が送信された際に実行される処理
-if user_msg:
     # 'content_text_to_gpt'変数がst.session_state内に存在しない場合、または新しいメッセージが前回のものと異なる場合
     # ユーザーが何も入力していない場合、または同じメッセージを再度入力した場合は、何も処理しない
     if 'content_text_to_gpt' not in st.session_state or (st.session_state.content_text_to_gpt != user_msg):
@@ -158,13 +143,10 @@ if user_msg:
         # st.session_stateの更新
         st.session_state.content_text_to_gpt = user_msg
 
-        # 応答メッセージの表示
-        st.write(bot_response)
-
-    # ユーザーのメッセージをチャット履歴に追加
-    st.session_state.chat_log.append({"name": USER_NAME, "msg": user_msg})
-    # アシスタントの応答をチャット履歴に追加
-    st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": bot_response})
+        # ユーザーのメッセージをチャット履歴に追加
+        st.session_state.chat_log.append({"name": USER_NAME, "msg": user_msg})
+        # アシスタントの応答をチャット履歴に追加
+        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": bot_response})
 
 else:
     # ユーザーが何も入力していない場合の処理
@@ -173,16 +155,29 @@ else:
 
 # GPTで生成する関数を実行します
 st.sidebar.header('名言を加工してSlackに投稿します')
+
+# どんなスタイルの名言に加工するかを選択します。
+types = {
+    'Tech先生': 'ITテクノロジーを活用するビジネスパーソン風でウィットにとんだ文章',
+    '優しい先生': '私が元気になるように優しい先生が喋りかけるような文章',
+    'スパルタ先生': '私が頑張らざるをえないように、スパルタ先生が怒るような文章',
+    'わんこ先生': '語尾に「ワン」とつく文章',
+    'にゃんこ先生': '「にゃんにゃん」だけで表現した文章'
+}
+st.session_state.selected_type = types[st.sidebar.selectbox('どんなスタイルにするか選択してください', list(types.keys()))]
+
+
 if st.sidebar.button('GPTで名言を加工'):
-    output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen,st.session_state.content_text_to_gpt)
+    request_content_text,output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen,st.session_state.content_text_to_gpt,st.session_state.selected_type)
+    st.session_state.request_content_text = request_content_text
     st.session_state.output_content_text = output_content_text
-    st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "加工が完了しました。加工した名言をSlackに投稿しましょう。"})
+    st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": st.session_state.output_content_text})
 
 # slack関数を使って変数に格納したテキストをslackに送ります
 if st.sidebar.button('加工前の名言をslackに投稿'): 
     if 'output_content_text' in st.session_state:
         text_to_slack.send_slack_message(st.session_state.selected_meigen)
-        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "slackに加工前の名言を投稿しました!"})
+        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "slackに有名な名言を送ったよ!"})
     else:
         st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "元にする名言が選択されていません。スクレイピングして名言を取得してください。"})
 
@@ -192,10 +187,18 @@ if st.sidebar.button('GPTで加工した名言をslackに投稿'):
     # st.session_stateからoutput_content_textを参照して使用
     if 'output_content_text' in st.session_state:
         text_to_slack.send_slack_message(st.session_state.output_content_text)
-        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "slackに加工後の名言を投稿しました!"})
+        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "slackに励ましのメッセージを送ったよ!"})
     else:
         # アシスタントの応答をチャット履歴に追加
-        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "加工された名言がありません。先に「名言をGPTで加工」ボタンを押してください。"})
+        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "さきに「名言をGPTで加工」ボタンを押してね"})
+
+# slack関数を使って変数に格納したテキストをslackに送ります
+if st.sidebar.button('GPTに送ったテキストをslackに投稿'): 
+    if 'output_content_text' in st.session_state:
+        text_to_slack.send_slack_message(st.session_state.request_content_text)
+        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "slackにテキストを送ったよ!"})
+    else:
+        st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "さきに「名言をGPTで加工」ボタンを押してね"})
 
 # チャット履歴を表示
 for chat in st.session_state.chat_log:
