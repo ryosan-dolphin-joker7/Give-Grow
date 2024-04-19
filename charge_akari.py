@@ -5,21 +5,20 @@ from bs4 import BeautifulSoup
 from PIL import Image
 from googleapiclient.discovery import build
 
+# Streamlitアプリケーションのページ設定を初期化およびカスタマイズする（関数の実行前にいれる）
+st.set_page_config(layout="wide")
 
 # 以下は別ファイルに関数を記載して実行するためのfrom,import文です
 # fromにディレクトリ名、importにファイル名を記載します
 # 関数を使うときは、ファイル名.関数名()でOK
 
-from services import meigen_gpt,text_to_slack,meigen_scraping,meigen_source
+from services import meigen_gpt,text_to_slack,meigen_scraping,meigen_source,edited_image
 
 # meigen_gpt        ：テキストをGPTに送る関数です
 # text_to_slack     ：slackにテキストを送る関数です
 # meigen_scraping   ：ページから名言を抽出する関数です
 # meigen_source     :名言から画像を取得する関数です
 
-
-
-st.set_page_config(layout="wide")
 st.title('漫画の名言スクレイピング')
 
 st.header('1.スクレイピングする名言のページを選択します')
@@ -182,3 +181,7 @@ for chat in st.session_state.chat_log:
     avatar = avatar_img_dict.get(chat["name"], None)
     with st.chat_message(chat["name"], avatar=avatar):
         st.write(chat["msg"])
+
+
+# 画像を編集する関数を実行する
+edited_image.edited_image()
