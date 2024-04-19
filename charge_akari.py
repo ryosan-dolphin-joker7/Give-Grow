@@ -20,7 +20,8 @@ from services import meigen_gpt,text_to_slack,meigen_scraping,meigen_source
 
 st.set_page_config(layout="wide")
 
-tab1, tab2 = st.tabs(["名言データベース", "励ましBOT 元気チャージャーあかりちゃん"])
+tab1, tab2 = st.tabs(["名言データベース", "元気チャージャーあかりちゃん"])
+
 
 with tab1:
     st.title('名言データベース')
@@ -93,8 +94,26 @@ with tab1:
 with tab2:
     # タイトルを設定する
     st.header("励ましBOT 元気チャージャーあかりちゃん")
-    st.image('img/trouble_ programming.png', caption='プログラミングに悩む姿', width=300)
+    
+    # あかりちゃんの動作設定をします
+    st.sidebar.header('あかりちゃんの設定')
 
+    # どんなスタイルの名言に加工するかを選択します。
+    mode = {
+        '自動モード': 'Auto',
+        '手動モード': 'Manual'
+    }
+    st.session_state.selected_mode = mode[st.sidebar.selectbox('手動・自動モードを選択してください', list(mode.keys()))]
+
+    # どんなスタイルの名言に加工するかを選択します。
+    types = {
+        'Tech先生': 'ITテクノロジーを活用するビジネスパーソン風でウィットにとんだ文章',
+        '優しい先生': '私が元気になるように優しい先生が喋りかけるような文章',
+        'スパルタ先生': '私が頑張らざるをえないように、スパルタ先生が怒るような文章',
+        'わんこ先生': '語尾に「ワン」とつく文章',
+        'にゃんこ先生': '「にゃんにゃん」だけで表現した文章'
+    }
+    st.session_state.selected_type = types[st.sidebar.selectbox('どんなスタイルにするか選択してください', list(types.keys()))]
     # 定数定義
     USER_NAME = "あなた"
     ASSISTANT_NAME = "あかりちゃん"
@@ -123,6 +142,7 @@ with tab2:
 
     # ユーザーの入力が送信された際に実行される処理
     user_msg = st.text_input("何に悩んでいますか？")
+    st.image('img/trouble_ programming.png', caption='プログラミングに悩む姿', width=300)
 
     # チャット履歴を保存するセッションステートの初期化
     if 'chat_history' not in st.session_state:
@@ -139,43 +159,46 @@ with tab2:
         if 'content_text_to_gpt' not in st.session_state or (st.session_state.content_text_to_gpt != user_msg):
             # ユーザーが初めてメッセージを入力した場合
             if 'content_text_to_gpt' not in st.session_state:
-                bot_response = f"あなたの悩みは「{user_msg}」なんですね。ボタンを押して名言を加工しましょう"
+                bot_response = f"あなたの悩みは「{user_msg}」なんですね。"
             # ユーザーが新しいメッセージを入力し、それが前回のメッセージと異なる場合
             else:
-                bot_response = f"あなたの悩みを「{user_msg}」に変更しました。ボタンを押して名言を加工しましょう"
+                bot_response = f"あなたの悩みを「{user_msg}」に変更しました。"
             
             # st.session_stateの更新
             st.session_state.content_text_to_gpt = user_msg
 
-            # ユーザーのメッセージをチャット履歴に追加
-            st.session_state.chat_log.append({"name": USER_NAME, "msg": user_msg})
             # アシスタントの応答をチャット履歴に追加
             st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": bot_response})
+
+            # 自動か手動で回答を変更
+            if st.session_state.selected_mode == "Auto" :
+                bot_response = f"そんなあなたにはこのメッセージを送ります！"
+                # アシスタントの応答をチャット履歴に追加
+                st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": bot_response})
+
+                # GPT関数に名言を送る
+                request_content_text,output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen,st.session_state.content_text_to_gpt,st.session_state.selected_type)
+                st.session_state.request_content_text = request_content_text
+                st.session_state.output_content_text = output_content_text
+                st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": st.session_state.output_content_text})
+
+                text_to_slack.send_slack_message(st.session_state.output_content_text)
+                st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "slackに励ましのメッセージを送ったよ!"})
+            else:
+                bot_response = f"ボタンを押してください。"
+
 
     else:
         # ユーザーが何も入力していない場合の処理
         bot_response = "何か入力してください。"
 
-
-    # GPTで生成する関数を実行します
-    st.sidebar.header('名言を加工してSlackに投稿します')
-
-    # どんなスタイルの名言に加工するかを選択します。
-    types = {
-        'Tech先生': 'ITテクノロジーを活用するビジネスパーソン風でウィットにとんだ文章',
-        '優しい先生': '私が元気になるように優しい先生が喋りかけるような文章',
-        'スパルタ先生': '私が頑張らざるをえないように、スパルタ先生が怒るような文章',
-        'わんこ先生': '語尾に「ワン」とつく文章',
-        'にゃんこ先生': '「にゃんにゃん」だけで表現した文章'
-    }
-    st.session_state.selected_type = types[st.sidebar.selectbox('どんなスタイルにするか選択してください', list(types.keys()))]
-
-
+    # GPTで名言を加工します。
     if st.sidebar.button('GPTで名言を加工'):
         request_content_text,output_content_text = meigen_gpt.make_meigen(st.session_state.selected_meigen,st.session_state.content_text_to_gpt,st.session_state.selected_type)
         st.session_state.request_content_text = request_content_text
         st.session_state.output_content_text = output_content_text
         st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": st.session_state.output_content_text})
+
 
     # slack関数を使って変数に格納したテキストをslackに送ります
     if st.sidebar.button('加工前の名言をslackに投稿'): 
@@ -184,6 +207,7 @@ with tab2:
             st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "slackに有名な名言を送ったよ!"})
         else:
             st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "元にする名言が選択されていません。スクレイピングして名言を取得してください。"})
+
 
     # 引数にテキストを入れるとSlackに投稿します
     # チャンネルは「@charger_akari」で固定です。（詳細はtext_to_slack.pyを参照してください）
@@ -196,8 +220,8 @@ with tab2:
             # アシスタントの応答をチャット履歴に追加
             st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "さきに「名言をGPTで加工」ボタンを押してね"})
 
-    # slack関数を使って変数に格納したテキストをslackに送ります
-    if st.sidebar.button('GPTに送ったテキストをslackに投稿'): 
+    # slack関数を使ってGPTのプロンプトをslackに送ります
+    if st.sidebar.button('GPTのプロンプトをslackに投稿'): 
         if 'output_content_text' in st.session_state:
             text_to_slack.send_slack_message(st.session_state.request_content_text)
             st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": "slackにテキストを送ったよ!"})
