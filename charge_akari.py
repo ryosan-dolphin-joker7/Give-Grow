@@ -31,7 +31,7 @@ st.title('漫画の名言スクレイピング')
 tab1, tab2 = st.tabs(["名言データベース", "元気チャージャーあかりちゃん"])
 
 with tab1:
-    st.image('img/sample.png', caption='名言を使って元気チャージ！')
+    st.image('img/image_template/sample.png', caption='名言を使って元気チャージ！')
 
     if st.button("ランダムに名言を表示"):
         random_quotes = load_quotes_from_db()
@@ -39,22 +39,27 @@ with tab1:
         if not random_quotes.empty:
             st.dataframe(random_quotes[['quote', 'author', 'url']])
 
+    # 名言の選択
     if 'random_quotes' in st.session_state and not st.session_state.random_quotes.empty:
         selected_quote = st.selectbox('名言を選択してください', st.session_state.random_quotes['quote'])
         if selected_quote:
             quote_details = st.session_state.random_quotes[st.session_state.random_quotes['quote'] == selected_quote].iloc[0]
             st.write('選択された名言:', selected_quote)
             st.write('by:', quote_details['author'])
-
             image_url = meigen_source.fetch_image_url(selected_quote)
             if image_url:
                 st.image(image_url, caption=f"名言「{selected_quote}」に関連する画像", width=300)
+                
+                # edited_image 関数を呼び出す条件を満たした場合のみ実行
+                edited_image.edited_image(selected_quote)
+                
             else:
                 st.error("関連する画像が見つかりませんでした。")
 
+
     st.header('画像編集アプリ')
     # 画像を編集する関数を実行する
-    edited_image.edited_image()
+    edited_image.edited_image(selected_quote)
 
 with tab2:
     st.header("励ましBOT 元気チャージャーあかりちゃん")
