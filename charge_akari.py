@@ -42,33 +42,34 @@ def load_quotes_from_db():
         return pd.read_sql_query("SELECT quote, author, url FROM quotes ORDER BY RANDOM() LIMIT 20", conn)
 
 # Streamlitアプリケーションの初期設定
-st.title('★名言の泉★')
+st.title('⛲名言の泉⛲')
 
 # 説明文の設定
 st.write("""
 心に響く名言があなたを待っています。名言の泉は、あなたが必要とする元気とインスピレーションを提供します。このアプリは、世界中の有名な人々の名言を集め、あなたに合わせて提供します。
 """)
 
-st.subheader("機能1:名言データベース")
+st.subheader("機能1 名言元気玉🐉")
 st.write("""
-この機能は３万件以上の名言を検索し、あなたが必要とする名言を見つけるための強力なツールです。誰かを励ますための完璧な名言を見つけることができます。これは、あなたが他人に影響を与え、ポジティブなエネルギーを広めるのに役立つ機能です。
+３万件の名言から、あなたが必要とする名言を見つけるための強力なツールです。あなたの大切な組織を励ますための完璧な名言を見つけることができます。元気玉によって、あなたのコミュニティにポジティブなエネルギーを広めるのに役立ちます。
 """)
 
-st.subheader("機能2:元気チャージャーあかりちゃん")
+st.subheader("機能2 元気チャージャーあかりちゃん🧚")
 st.write("""
-あかりちゃんは、あなたの悩みに対応する名言を提供するための人工知能ボットです。あなたが現在直面している問題や悩みをあかりちゃんに伝えると、あかりちゃんはあなたが元気になる言葉を見つけてくれます。これは、あなたが困難な状況を乗り越えるための支援を提供する機能です。
+あなたが直面している課題や悩みに対して名言のメタファーを取り入れて励ましてくれるAIです。あかりちゃんは、あなたが困難な状況を乗り越えるための頼もしいパートナーです。
 """)
 
 
 
 # タブの設定
-tab1, tab2 = st.tabs(["名言データベース", "元気チャージャーあかりちゃん"])
+tab1, tab2 = st.tabs(["名言元気玉🐉", "元気チャージャーあかりちゃん🧚"])
 
 
 with tab1:
-    st.image('img/image_template/sample.png', caption='名言を使って元気チャージ！')
+    st.image('img/image_template/sample.png', caption='名言で元気をチャージ！')
+    st.write("①名言を抽出してください")
 
-    if st.button("ランダムに名言を表示"):
+    if st.button("ランダムに名言を抽出"):
         random_quotes = load_quotes_from_db()
         st.session_state.random_quotes = random_quotes
         if not random_quotes.empty:
@@ -76,7 +77,7 @@ with tab1:
 
     # 名言の選択
     if 'random_quotes' in st.session_state and not st.session_state.random_quotes.empty:
-        selected_quote = st.selectbox('名言を選択してください', st.session_state.random_quotes['quote'])
+        selected_quote = st.selectbox('②名言を選択してください', st.session_state.random_quotes['quote'])
         if selected_quote:
             quote_details = st.session_state.random_quotes[st.session_state.random_quotes['quote'] == selected_quote].iloc[0]
             st.write('選択された名言:', selected_quote)
