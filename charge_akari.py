@@ -53,12 +53,10 @@ with tab1:
             st.write('選択された名言:', selected_quote)
             st.write('by:', quote_details['author'])
             image_url = meigen_source.fetch_image_url(selected_quote)
+            st.session_state.selected_quote = selected_quote
             if image_url:
                 st.image(image_url, caption=f"名言「{selected_quote}」に関連する画像", width=300)
                 
-                # edited_image 関数を呼び出す条件を満たした場合のみ実行
-                edited_image.edited_image(selected_quote)
-                st.session_state.selected_quote = selected_quote
             else:
                 st.error("関連する画像が見つかりませんでした。")
 
