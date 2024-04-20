@@ -30,6 +30,8 @@ st.set_page_config(
 
 from services import meigen_gpt,text_to_slack,meigen_scraping,meigen_source
 from services.edited_image import edited_image
+from services.meigen_gpt import make_meigen
+from services.text_to_slack import send_slack_message
 
 # meigen_gpt        ：テキストをGPTに送る関数です
 # text_to_slack     ：slackにテキストを送る関数です
