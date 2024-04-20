@@ -12,12 +12,13 @@ st.set_page_config(layout="wide")
 # fromにディレクトリ名、importにファイル名を記載します
 # 関数を使うときは、ファイル名.関数名()でOK
 
-from services import meigen_gpt,text_to_slack,meigen_scraping,meigen_source,edited_image
+from services import meigen_gpt,text_to_slack,meigen_scraping,meigen_source
+from services.edited_image import edited_image
 
 # meigen_gpt        ：テキストをGPTに送る関数です
 # text_to_slack     ：slackにテキストを送る関数です
-# meigen_scraping   ：ページから名言を抽出する関数です
 # meigen_source     :名言から画像を取得する関数です
+# edited_image   　 ：画像を編集する関数です
 
 # DBからランダムに20件の名言を読み込む関数
 def load_quotes_from_db():
@@ -59,6 +60,8 @@ with tab1:
                 
             else:
                 st.error("関連する画像が見つかりませんでした。")
+    st.header("画像にテキストを追加")
+    edited_image()  # 画像編集機能を呼び出す
 
     if 'selected_quote' in st.session_state:
         st.header('画像編集アプリ')
