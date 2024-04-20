@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 from PIL import Image
 from googleapiclient.discovery import build
+import os
 
 
 # 以下は別ファイルに関数を記載して実行するためのfrom,import文です
@@ -98,11 +99,11 @@ ASSISTANT_NAME = "あかりちゃん"
 
 # ユーザーとアシスタントのアバターを設定
 if "img_ASSISTANT" not in st.session_state:
-    st.session_state.img_ASSISTANT = Image.open("img/akari_icon.png")
+    st.session_state.img_ASSISTANT = Image.open(os.path.join("C:/Users/jiebing/Desktop/Give-Grow/img", "akari_icon.png"))
 img_ASSISTANT = st.session_state.img_ASSISTANT
 
 if "img_USER" not in st.session_state:
-    st.session_state.img_USER = Image.open("img/Give&Grow.png")
+    st.session_state.img_USER = Image.open(os.path.join("C:/Users/jiebing/Desktop/Give-Grow/img", "Give&Grow.png"))
 img_USER = st.session_state.img_USER
 
 avatar_img_dict = {
