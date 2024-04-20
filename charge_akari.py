@@ -72,7 +72,7 @@ with tab1:
             else:
                 st.error("関連する画像が見つかりませんでした。")
             # 画像編集機能を呼び出す
-            edited_image(selected_quote)
+            edited_image(selected_quote, quote_details['author'])
 
 with tab2:
     st.image('img/akari_icon.png', caption='名言を使って元気チャージ！')
