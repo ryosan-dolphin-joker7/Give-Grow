@@ -30,6 +30,7 @@ st.set_page_config(
 
 from services import meigen_gpt,text_to_slack,meigen_scraping,meigen_source
 from services.edited_image import edited_image
+from services.meigen_search import search_and_display_quotes
 
 # meigen_gpt        ：テキストをGPTに送る関数です
 # text_to_slack     ：slackにテキストを送る関数です
@@ -67,6 +68,20 @@ tab1, tab2 = st.tabs(["名言データベース", "元気チャージャーあ�
 
 with tab1:
     st.image('img/image_template/sample.png', caption='名言を使って元気チャージ！')
+
+    # この関数を呼び出すことで、指定されたパスのCSVファイルを使用して機能を実行します。
+    # CSVファイルのパスを関数に渡します。
+    # ユーザーからのキーワード入力を受け取る
+    keyword = st.text_input('ここにキーワードを入力してください')
+
+    # 「名言を検索」ボタン
+    if st.button("名言を検索", key="search"):
+        if keyword:  # キーワードが入力されているか確認
+            search_and_display_quotes('DB/output.csv', keyword)
+            if 'selected_quote' in st.session_state:
+                st.write(f"選択した名言:\n{st.session_state['selected_quote']}")  # 選択された名言を表示
+        else:
+            st.write("キーワードを入力してください。")
 
     if st.button("ランダムに名言を表示"):
         random_quotes = load_quotes_from_db()
