@@ -67,7 +67,7 @@ tab1, tab2 = st.tabs(["名言元気玉🐉", "元気チャージャーあかり�
 
 with tab1:
     st.image('img/image_template/sample.png', caption='名言で元気をチャージ！')
-    st.write("①名言を抽出してください")
+    st.subheader("① 名言を抽出してください")
 
     if st.button("ランダムに名言を抽出"):
         random_quotes = load_quotes_from_db()
@@ -77,10 +77,11 @@ with tab1:
 
     # 名言の選択
     if 'random_quotes' in st.session_state and not st.session_state.random_quotes.empty:
-        selected_quote = st.selectbox('②名言を選択してください', st.session_state.random_quotes['quote'])
+        st.subheader("② 名言を選択してください")
+        selected_quote = st.selectbox('', st.session_state.random_quotes['quote'])
         if selected_quote:
             quote_details = st.session_state.random_quotes[st.session_state.random_quotes['quote'] == selected_quote].iloc[0]
-            st.write('選択された名言:', selected_quote)
+            st.write('選択された名言:', "『" + selected_quote + "』")
             st.write('by:', quote_details['author'])
             image_url = meigen_source.fetch_image_url(selected_quote, quote_details['author'])
             if image_url:
