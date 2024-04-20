@@ -107,20 +107,20 @@ with tab1:
             key="selected_quote_dyn"
         )
         # 選択された名言を表示
-        st.write(f"選択した名言:\n{st.session_state.selected_quote}")
+        st.write(f"選択した名言:\n{st.session_state.selected_quote[0]}")
 
     # 名言をDBからランダムで抽出する
     if st.button("選択した名言を使う"):
         # 名言の選択
         if st.session_state.selected_quote:
-            st.write('選択された名言:', st.session_state.selected_quote)
-            image_url = meigen_source.fetch_image_url(st.session_state.selected_quote, 'author')
+            st.write('選択された名言:', st.session_state.selected_quote[0])
+            image_url = meigen_source.fetch_image_url(st.session_state.selected_quote[0], st.session_state.selected_quote[1])
             if image_url:
-                st.image(image_url, caption=f"名言「{st.session_state.selected_quote}」に関連する画像", width=300)
+                st.image(image_url, caption=f"名言「{st.session_state.selected_quote[0]}」に関連する画像", width=300)
             else:
                 st.error("関連する画像が見つかりませんでした。")
             # 画像編集機能を呼び出す
-            edited_image(st.session_state.selected_quote, 'author')
+            edited_image(st.session_state.selected_quote[0], st.session_state.selected_quote[1])
 
 
     # 名言をDBからランダムで抽出する
