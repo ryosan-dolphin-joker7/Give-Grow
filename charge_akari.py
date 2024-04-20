@@ -92,8 +92,9 @@ with tab2:
         'わんこ先生': '語尾に「ワン」とつく文章',
         'にゃんこ先生': '「にゃんにゃん」だけで表現した文章'
     }
-    selected_type = st.sidebar.selectbox('どんなスタイルにするか選択してください', list(types.keys()))
+    selected_type = st.sidebar.selectbox('どんなスタイルにするか選択してください', list(types.keys()), index=0)
     st.session_state.selected_type = types[selected_type]
+
 
     user_msg = st.text_input("あなたの心配事やお悩みをお聞かせください。")
     if user_msg:
@@ -102,7 +103,7 @@ with tab2:
         st.write(response)
 
     if st.sidebar.button('名言を加工'):
-        output_text = meigen_gpt.make_meigen(st.session_state.content_text_to_gpt, st.session_state.selected_type)
+        output_text = meigen_gpt.make_meigen(st.session_state.content_text_to_gpt, "", st.session_state.selected_type)
         st.write("加工後の名言:", output_text)
         text_to_slack.send_slack_message(output_text)
 
