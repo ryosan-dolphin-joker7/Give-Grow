@@ -130,7 +130,7 @@ with tab2:
 
         text_to_slack.send_slack_message(output_text)
 
-    if st.sidebar.button('加工した名言をSlackに投稿'):
+    if st.sidebar.button('あたりちゃんからのメッセージをSlackに投稿'):
         text_to_slack.send_slack_message(output_text)
 
 # アバターの設定
