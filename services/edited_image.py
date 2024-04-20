@@ -10,8 +10,8 @@ def add_text_to_image(image, text, position, font_name, font_size, text_color):
         font_paths = [
             f"C:\\Windows\\Fonts\\{font_name}.ttc",
             f"C:\\Windows\\Fonts\\{font_name}.ttf",
-            f"./fonts/{font_name}.ttc",
-            f"./fonts/{font_name}.ttf"
+            f"./fonts/image_template/{font_name}.ttc",
+            f"./fonts/image_template/{font_name}.ttf"
         ]
         
         # 利用可能なフォントファイルを検索
@@ -35,10 +35,25 @@ def edited_image():
 
     uploaded_file = st.file_uploader("画像をアップロードしてください", type=['png', 'jpg', 'jpeg'], key="image_uploader")
 
+    # アップロードされたファイルがあるかどうか確認
     if uploaded_file is not None:
         if 'uploaded_file_name' not in st.session_state or st.session_state.uploaded_file_name != uploaded_file.name:
             st.session_state.uploaded_file_name = uploaded_file.name
             image = Image.open(uploaded_file)
+            st.session_state.image = image
+            st.session_state.text_added = False  # 初回テキスト追加のためのフラグ
+    else:
+        # /imgフォルダ内のファイルリストを取得
+        img_folder_path = './img'
+        available_images = [f for f in os.listdir(img_folder_path) if os.path.isfile(os.path.join(img_folder_path, f))]
+        
+        # ユーザーがフォルダ内のファイルから選択できるようにする
+        selected_image_file = st.selectbox('利用可能な画像を選択してください：', available_images)
+        
+        if selected_image_file:
+            # 選択された画像ファイルを開く
+            image_path = os.path.join(img_folder_path, selected_image_file)
+            image = Image.open(image_path)
             st.session_state.image = image
             st.session_state.text_added = False  # 初回テキスト追加のためのフラグ
 
