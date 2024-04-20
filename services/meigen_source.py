@@ -48,4 +48,3 @@ def fetch_image_data(image_url):
     except Exception as e:
         print(f"Error fetching image data: {e}")
         return None
-

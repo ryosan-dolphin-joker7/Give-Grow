@@ -89,7 +89,6 @@ with tab1:
             # 画像編集機能を呼び出す
             edited_image(selected_quote, quote_details['author'])
 
-
 with tab2:
     st.image('img/akari_icon.png', caption='名言を使って元気チャージ！')
     st.header("元気チャージャーあかりちゃん")
@@ -115,15 +114,23 @@ with tab2:
     user_msg = st.text_input("あなたの心配事やお悩みをお聞かせください。")
     if user_msg:
         st.session_state.content_text_to_gpt = user_msg
-        response = f"あなたの悩み「{user_msg}」をもとに励ましメッセージを生成します。"
+        response = f"あなたの悩み「{user_msg}」をもとに、私（あかり）は、あなたに励ましのメッセージを贈ります。"
         st.write(response)
 
     if st.sidebar.button('あかりちゃんからメッセージをもらう'):
-        output_text = meigen_gpt.make_meigen(st.session_state.content_text_to_gpt, "", st.session_state.selected_type)
+        # ユーザーの悩みと選択スタイルを取得
+        content_text_to_gpt = st.session_state.content_text_to_gpt
+        selected_type = st.session_state.selected_type
+
+        # GPT で励ましのメッセージを生成
+        output_text = meigen_gpt.make_meigen(content_text_to_gpt, selected_type)
+
+        # 生成されたメッセージを出力
         st.write("あかりちゃんからのメッセージ:", output_text)
+
         text_to_slack.send_slack_message(output_text)
 
-    if st.sidebar.button('加工した名言をSlackに投稿'):
+    if st.sidebar.button('あたりちゃんからのメッセージをSlackに投稿'):
         text_to_slack.send_slack_message(output_text)
 
 # アバターの設定
