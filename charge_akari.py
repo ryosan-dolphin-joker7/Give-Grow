@@ -4,9 +4,25 @@ import requests
 from PIL import Image
 from googleapiclient.discovery import build
 import sqlite3
+import os
 
-# Streamlitアプリケーションのページ設定を初期化およびカスタマイズする（関数の実行前にいれる）
-st.set_page_config(layout="wide")
+# 画像が保存されているフォルダのパスを指定します。
+# この例では、カレントディレクトリの下にある `images` フォルダ内にあると仮定しています。
+image_folder_path = 'img'  # または適切なパスに変更してください
+
+# `os.path.join` を使用して、プラットフォームに依存しない形で画像へのパスを構築します。
+favicon_path = os.path.join(image_folder_path, 'favicon.ico')
+
+# 画像を開きます。
+im = Image.open(favicon_path)
+
+# Streamlitのページ設定を行います。
+st.set_page_config(
+    page_title="C_Akari", 
+    page_icon=im,
+    layout="wide", 
+    initial_sidebar_state="auto", 
+    )
 
 # 以下は別ファイルに関数を記載して実行するためのfrom,import文です
 # fromにディレクトリ名、importにファイル名を記載します
@@ -71,7 +87,21 @@ with tab1:
             else:
                 st.error("関連する画像が見つかりませんでした。")
             # 画像編集機能を呼び出す
-            edited_image(selected_quote)
+            edited_image(selected_quote, quote_details['author'])
+
+            # fetch_image_url関数を使って画像のURLを取得する（fetch_image_url関数の実装は既に提供されています）
+            '''
+            image_url = meigen_source.fetch_image_url("Python ロゴ")
+
+            if image_url:
+            # URLから画像データを取得
+                image_data = fetch_image_data(image_url)
+                if image_data:
+                    # PILを使用して画像データからImageオブジェクトを作成
+                    image = Image.open(image_data)
+                    # Streamlitを使用して画像を表示
+                    st.image(image, caption="検索結果の画像")
+                    '''
 
 with tab2:
     st.image('img/akari_icon.png', caption='名言を使って元気チャージ！')
