@@ -1,8 +1,7 @@
 streamlit
 pandas
 requests
-BeautifulSoup4
+beautifulsoup4
 python-dotenv
 openai
 google-api-python-client
-sqlite3
