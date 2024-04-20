@@ -25,7 +25,13 @@ def load_quotes_from_db():
         return pd.read_sql_query("SELECT quote, author, url FROM quotes ORDER BY RANDOM() LIMIT 20", conn)
 
 # Streamlitアプリケーションの初期設定
-st.title('漫画の名言スクレイピング')
+st.title('名言の泉')
+
+# 説明文の設定
+st.write("""
+心に響く名言があなたを待っています。名言の泉は、あなたが必要とする元気とインスピレーションを提供します。このアプリは、世界中の有名な人々の名言を集め、あなたに合わせて提供します。
+""")
+
 
 # タブの設定
 tab1, tab2 = st.tabs(["名言データベース", "元気チャージャーあかりちゃん"])
