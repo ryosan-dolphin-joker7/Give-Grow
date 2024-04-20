@@ -43,31 +43,32 @@ def load_quotes_from_db():
         return pd.read_sql_query("SELECT quote, author, url FROM quotes ORDER BY RANDOM() LIMIT 20", conn)
 
 # Streamlitアプリケーションの初期設定
-st.title('★名言の泉★')
+st.title('⛲名言の泉⛲')
 
 # 説明文の設定
 st.write("""
 心に響く名言があなたを待っています。名言の泉は、あなたが必要とする元気とインスピレーションを提供します。このアプリは、世界中の有名な人々の名言を集め、あなたに合わせて提供します。
 """)
 
-st.subheader("機能1:名言データベース")
+st.subheader("機能1 名言元気玉🐉")
 st.write("""
-この機能は３万件以上の名言を検索し、あなたが必要とする名言を見つけるための強力なツールです。誰かを励ますための完璧な名言を見つけることができます。これは、あなたが他人に影響を与え、ポジティブなエネルギーを広めるのに役立つ機能です。
+３万件の名言から、あなたが必要とする名言を見つけるための強力なツールです。あなたの大切な組織を励ますための完璧な名言を見つけることができます。元気玉によって、あなたのコミュニティにポジティブなエネルギーを広めるのに役立ちます。
 """)
 
-st.subheader("機能2:元気チャージャーあかりちゃん")
+st.subheader("機能2 元気チャージャーあかりちゃん🧚")
 st.write("""
-あかりちゃんは、あなたの悩みに対応する名言を提供するための人工知能ボットです。あなたが現在直面している問題や悩みをあかりちゃんに伝えると、あかりちゃんはあなたが元気になる言葉を見つけてくれます。これは、あなたが困難な状況を乗り越えるための支援を提供する機能です。
+あなたが直面している課題や悩みに対して名言のメタファーを取り入れて励ましてくれるAIです。あかりちゃんは、あなたが困難な状況を乗り越えるための頼もしいパートナーです。
 """)
 
 
 
 # タブの設定
-tab1, tab2 = st.tabs(["名言データベース", "元気チャージャーあかりちゃん"])
+tab1, tab2 = st.tabs(["名言元気玉🐉", "元気チャージャーあかりちゃん🧚"])
 
 
 with tab1:
-    st.image('img/image_template/sample.png', caption='名言を使って元気チャージ！')
+    st.image('img/image_template/sample.png', caption='名言で元気をチャージ！')
+    st.subheader("① 名言を抽出してください")
 
     # 初期化
     if 'quote_options' not in st.session_state:
@@ -124,7 +125,7 @@ with tab1:
 
 
     # 名言をDBからランダムで抽出する
-    if st.button("ランダムに名言を表示"):
+    if st.button("ランダムに名言を抽出"):
         random_quotes = load_quotes_from_db()
         st.session_state.random_quotes = random_quotes
         if not random_quotes.empty:
@@ -132,14 +133,19 @@ with tab1:
 
     # 名言の選択
     if 'random_quotes' in st.session_state and not st.session_state.random_quotes.empty:
-        selected_quote = st.selectbox('名言を選択してください', st.session_state.random_quotes['quote'])
+        st.markdown('##')
+        st.subheader("② 名言を選択してください")
+        selected_quote = st.selectbox('', st.session_state.random_quotes['quote'])
         if selected_quote:
             quote_details = st.session_state.random_quotes[st.session_state.random_quotes['quote'] == selected_quote].iloc[0]
-            st.write('選択された名言:', selected_quote)
-            st.write('by:', quote_details['author'])
+            st.write('選択された名言:', "『" + selected_quote + "』 by:" + quote_details['author'])
             image_url = meigen_source.fetch_image_url(selected_quote, quote_details['author'])
             if image_url:
-                st.image(image_url, caption=f"名言「{selected_quote}」に関連する画像", width=300)
+                col1, col2, col3 = st.columns([2, 2, 1])  # 画像とキャプションの比率を3:1に設定
+                with col1:
+                    st.image(image_url, width=300)  # 画像を表示
+                with col2:
+                    st.write(f"名言「{selected_quote}」に関連する画像")  # キャプションを表示
             else:
                 st.error("関連する画像が見つかりませんでした。")
             # 画像編集機能を呼び出す
@@ -148,11 +154,11 @@ with tab1:
 with tab2:
     st.image('img/akari_icon.png', caption='名言を使って元気チャージ！')
     st.header("元気チャージャーあかりちゃん")
-    st.sidebar.header('あかりちゃんの設定')
+    st.subheader('あかりちゃんの設定')
 
     # モード選択
     mode = {'自動モード': 'Auto', '手動モード': 'Manual'}
-    selected_mode = st.sidebar.selectbox('手動・自動モードを選択してください', list(mode.keys()))
+    selected_mode = st.selectbox('手動・自動モードを選択してください', list(mode.keys()))
     st.session_state.selected_mode = mode[selected_mode]
 
     # スタイル選択
@@ -163,7 +169,7 @@ with tab2:
         'わんこ先生': '語尾に「ワン」とつく文章',
         'にゃんこ先生': '「にゃんにゃん」だけで表現した文章'
     }
-    selected_type = st.sidebar.selectbox('どんなスタイルにするか選択してください', list(types.keys()), index=0)
+    selected_type = st.selectbox('どんなスタイルにするか選択してください', list(types.keys()), index=0)
     st.session_state.selected_type = types[selected_type]
 
 
@@ -173,7 +179,7 @@ with tab2:
         response = f"あなたの悩み「{user_msg}」をもとに、私（あかり）は、あなたに励ましのメッセージを贈ります。"
         st.write(response)
 
-    if st.sidebar.button('あかりちゃんからメッセージをもらう'):
+    if st.button('あかりちゃんからメッセージをもらう'):
         # ユーザーの悩みと選択スタイルを取得
         content_text_to_gpt = st.session_state.content_text_to_gpt
         selected_type = st.session_state.selected_type
@@ -186,7 +192,7 @@ with tab2:
 
         text_to_slack.send_slack_message(output_text)
 
-    if st.sidebar.button('あたりちゃんからのメッセージをSlackに投稿'):
+    if st.button('あかりちゃんからのメッセージをSlackに投稿'):
         text_to_slack.send_slack_message(output_text)
 
 # アバターの設定

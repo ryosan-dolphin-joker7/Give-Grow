@@ -53,7 +53,9 @@ def add_text_to_image(image, text, position, font_name, font_size, text_color, m
 def edited_image(selected_quote, selected_author):
     img_folder_path = './img/image_template'
     available_images = [f for f in os.listdir(img_folder_path) if os.path.isfile(os.path.join(img_folder_path, f))]
-    uploaded_file = st.file_uploader("画像をアップロードしてください", type=['png', 'jpg', 'jpeg'], key=f"file_uploader_{selected_quote}")
+    st.markdown('##')
+    st.subheader("③ 名言を入れ込む画像を用意してください")
+    uploaded_file = st.file_uploader("③-A アップロード ※任意の画像がない場合はUP不要", type=['png', 'jpg', 'jpeg'], key=f"file_uploader_{selected_quote}")
 
     image = None
     if uploaded_file is not None:
@@ -61,7 +63,8 @@ def edited_image(selected_quote, selected_author):
         st.session_state['image'] = image
         st.session_state['text_added'] = False
     else:
-        selected_image_file = st.selectbox('利用可能な画像を選択してください：', available_images, key=f"image_{selected_quote}")
+        selected_image_file = st.selectbox('③-B テンプレートから選択 ※オススメ✨', available_images, key=f"image_{selected_quote}")
+        st.markdown('##')
         if selected_image_file:
             image_path = os.path.join(img_folder_path, selected_image_file)
             image = Image.open(image_path)
@@ -72,25 +75,28 @@ def edited_image(selected_quote, selected_author):
         with st.form("text_form"):
             # 共通のフォント選択
             available_fonts = ["NotoSerifJP-Black", "NotoSerifJP-Bold", "NotoSerifJP-SemiBold", "meiryo", "meiryob", "BIZ-UDGothicR", "BIZ-UDGothicB", "YuGothR", "YuGothB", "HGRPP1"]
-            font_name = st.selectbox("フォントを選択してください", available_fonts, index=3)
+            st.subheader("""
+④必要に応じて文字のフォント・改行・位置を調整してください
+""")
+            font_name = st.selectbox("フォントを選択", available_fonts, index=3)
 
             # 名言の入力
-            quote_text = st.text_input("名言を入力してください", selected_quote)
+            quote_text = st.text_input("名言の調整 ※スペースを空けると改行できます", selected_quote)
             quote_position_x = st.slider("名言のX座標を入力", 0, 500, 70)
             quote_position_y = st.slider("名言のY座標を入力", 0, 500, 60)
-            quote_font_size = st.number_input("名言のフォントサイズを入力してください", value=35, min_value=1, key='quote_font_size')
-            quote_text_color = st.color_picker("名言の色を選択してください", "#141313")
+            quote_font_size = st.number_input("名言のフォントサイズを入力", value=35, min_value=1, key='quote_font_size')
+            quote_text_color = st.color_picker("名言の色を選択", "#141313")
             quote_max_width = st.slider("名言の最大幅を設定", 200, 1000, 500)
 
             # 著者の入力
-            author_text = st.text_input("著者名を入力してください", selected_author)
+            author_text = st.text_input("元ネタの調整", "by " + selected_author)
             author_position_x = st.slider("著者名のX座標を入力", 0, 500, 200)
             author_position_y = st.slider("著者名のY座標を入力", 0, 500, 200)
-            author_font_size = st.number_input("著者名のフォントサイズを入力してください", value=15, min_value=1, key='author_font_size')
-            author_text_color = st.color_picker("著者名の色を選択してください", "#141313")
+            author_font_size = st.number_input("著者名のフォントサイズを入力", value=15, min_value=1, key='author_font_size')
+            author_text_color = st.color_picker("著者名の色を選択", "#141313")
             author_max_width = st.slider("著者名の最大幅を設定", 200, 1000, 300)
 
-            submitted = st.form_submit_button("テキストを更新")
+            submitted = st.form_submit_button("変更を反映")
 
             if submitted or not st.session_state.get('text_added', False):
                 # 名言を画像に追加
