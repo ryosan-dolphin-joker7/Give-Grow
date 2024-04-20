@@ -6,28 +6,31 @@ def add_text_to_image(image, text, position, font_name, font_size, text_color):
     """画像にテキストを挿入する関数"""
     draw = ImageDraw.Draw(image)
     try:
-        # .ttcと.ttfのファイルパスを構築
-        font_path_ttc = f"C:\\Windows\\Fonts\\{font_name}.ttc"
-        font_path_ttf = f"C:\\Windows\\Fonts\\{font_name}.ttf"
+        # .ttcと.ttfのファイルパスをシステムフォントフォルダと/fontsフォルダで構築
+        font_paths = [
+            f"C:\\Windows\\Fonts\\{font_name}.ttc",
+            f"C:\\Windows\\Fonts\\{font_name}.ttf",
+            f"./fonts/{font_name}.ttc",
+            f"./fonts/{font_name}.ttf"
+        ]
         
-        # .ttcファイルが存在するか確認
-        if os.path.exists(font_path_ttc):
-            font = ImageFont.truetype(font_path_ttc, font_size, index=0)  # .ttcファイル用
-        # .ttfファイルが存在するか確認
-        elif os.path.exists(font_path_ttf):
-            font = ImageFont.truetype(font_path_ttf, font_size)  # .ttfファイル用
+        # 利用可能なフォントファイルを検索
+        font_path = next((path for path in font_paths if os.path.exists(path)), None)
+        
+        if font_path:
+            font = ImageFont.truetype(font_path, font_size, index=0 if font_path.endswith(".ttc") else None)
         else:
-            # ファイルが存在しない場合、デフォルトフォントを使用
+            # フォントファイルが見つからなかった場合、エラーを発生
             raise IOError
         
     except IOError:
         # フォントファイルが見つからなかった場合、デフォルトフォントを使用
         font = ImageFont.load_default()
-        st.warning(f"フォント '{font_name}' を読み込めませんでした。デフォルトフォントを使用します。")
+        print(f"フォント '{font_name}' を読み込めませんでした。デフォルトフォントを使用します。")  # 例: st.warningをprintに変更していますが、必要に応じて調整してください。
     
     draw.text(position, text, font=font, fill=text_color)
     return image
-
+    
 def edited_image():
 
     uploaded_file = st.file_uploader("画像をアップロードしてください", type=['png', 'jpg', 'jpeg'], key="image_uploader")
