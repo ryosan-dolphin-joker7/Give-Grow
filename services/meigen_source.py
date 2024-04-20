@@ -48,15 +48,3 @@ def fetch_image_data(image_url):
     except Exception as e:
         print(f"Error fetching image data: {e}")
         return None
-
-# fetch_image_url関数を使って画像のURLを取得する（fetch_image_url関数の実装は既に提供されています）
-
-if image_url:
-    # URLから画像データを取得
-    image_data = fetch_image_data(image_url)
-    if image_data:
-        # PILを使用して画像データからImageオブジェクトを作成
-        image = Image.open(image_data)
-        # Streamlitを使用して画像を表示
-        st.image(image, caption="検索結果の画像")
-
