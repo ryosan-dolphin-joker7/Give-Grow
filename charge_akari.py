@@ -75,6 +75,7 @@ with tab1:
             edited_image(selected_quote)
 
 with tab2:
+    st.image('img/akari_icon.png', caption='名言を使って元気チャージ！')
     st.header("元気チャージャーあかりちゃん")
     st.sidebar.header('あかりちゃんの設定')
 
