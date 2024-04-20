@@ -75,7 +75,7 @@ with tab1:
             edited_image(selected_quote)
 
 with tab2:
-    st.header("励ましBOT 元気チャージャーあかりちゃん")
+    st.header("元気チャージャーあかりちゃん")
     st.sidebar.header('あかりちゃんの設定')
 
     # モード選択
