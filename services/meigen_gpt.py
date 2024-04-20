@@ -22,19 +22,18 @@ def make_meigen(content_text_to_gpt, selected_type):
     # ユーザーの悩みと選択したスタイルに基づいてリクエストを生成
     request_to_gpt = f"悩みは『{content_text_to_gpt}』です。{selected_type} で励ましてください。文章は100文字以内で出力してください。"
 
-    # GPT にリクエストを送信
+    # GPT 応答
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": request_to_gpt},
         ],
-        max_length=100,  # 最大文字数を100に設定
     )
 
-    # 生成されたメッセージを取得
+    # 生成されたテキストを取得
     generated_text = response.choices[0].message.content.strip()
 
-    # メッセージの長さを確認し、必要に応じて切り捨てる
+    # 必要に応じて切断
     if len(generated_text) > 100:
         generated_text = generated_text[:100]
 
