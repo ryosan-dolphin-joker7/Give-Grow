@@ -114,7 +114,7 @@ with tab2:
     user_msg = st.text_input("あなたの心配事やお悩みをお聞かせください。")
     if user_msg:
         st.session_state.content_text_to_gpt = user_msg
-        response = f"あなたの悩み「{user_msg}」をもとに励ましメッセージを生成します。"
+        response = f"あなたの悩み「{user_msg}」をもとに、私（あかり）は、あなたに励ましのメッセージを贈ります。"
         st.write(response)
 
     if st.sidebar.button('あかりちゃんからメッセージをもらう'):
