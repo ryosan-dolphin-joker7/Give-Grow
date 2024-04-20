@@ -4,9 +4,25 @@ import requests
 from PIL import Image
 from googleapiclient.discovery import build
 import sqlite3
+import os
 
-# Streamlitアプリケーションのページ設定を初期化およびカスタマイズする（関数の実行前にいれる）
-st.set_page_config(layout="wide")
+# 画像が保存されているフォルダのパスを指定します。
+# この例では、カレントディレクトリの下にある `images` フォルダ内にあると仮定しています。
+image_folder_path = 'img'  # または適切なパスに変更してください
+
+# `os.path.join` を使用して、プラットフォームに依存しない形で画像へのパスを構築します。
+favicon_path = os.path.join(image_folder_path, 'favicon.ico')
+
+# 画像を開きます。
+im = Image.open(favicon_path)
+
+# Streamlitのページ設定を行います。
+st.set_page_config(
+    page_title="C_Akari", 
+    page_icon=im,
+    layout="wide", 
+    initial_sidebar_state="auto", 
+    )
 
 # 以下は別ファイルに関数を記載して実行するためのfrom,import文です
 # fromにディレクトリ名、importにファイル名を記載します
