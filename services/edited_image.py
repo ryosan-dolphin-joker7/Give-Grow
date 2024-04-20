@@ -29,7 +29,6 @@ def add_text_to_image(image, text, position, font_name, font_size, text_color):
     return image
 
 def edited_image():
-    st.title('画像編集アプリ')
 
     uploaded_file = st.file_uploader("画像をアップロードしてください", type=['png', 'jpg', 'jpeg'], key="image_uploader")
 

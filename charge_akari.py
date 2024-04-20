@@ -52,6 +52,10 @@ with tab1:
             else:
                 st.error("関連する画像が見つかりませんでした。")
 
+    st.header('画像編集アプリ')
+    # 画像を編集する関数を実行する
+    edited_image.edited_image()
+
 with tab2:
     st.header("励ましBOT 元気チャージャーあかりちゃん")
     st.sidebar.header('あかりちゃんの設定')
