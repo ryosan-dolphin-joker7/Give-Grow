@@ -103,7 +103,7 @@ with tab2:
 
     if st.sidebar.button('あかりちゃんからのメッセージをもらう'):
         output_text = meigen_gpt.make_meigen(st.session_state.content_text_to_gpt, "", st.session_state.selected_type)
-        st.write("加工後の名言:", output_text)
+        st.write("あかりちゃんからのメッセージ:", output_text)
         text_to_slack.send_slack_message(output_text)
 
     if st.sidebar.button('加工した名言をSlackに投稿'):
