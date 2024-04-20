@@ -33,9 +33,6 @@ def add_text_to_image(image, text, position, font_name, font_size, text_color, m
         f"./fonts/{font_name}.otf",
         f"./fonts/{font_name}.ttc",
         f"./fonts/{font_name}.ttf"
-        f".\\fonts\\{font_name}.otf",
-        f".\\fonts\\{font_name}.ttc",
-        f".\\fonts\\{font_name}.ttf"
     ]
     font = None
     for path in font_paths:
@@ -74,7 +71,7 @@ def edited_image(selected_quote, selected_author):
     if image:
         with st.form("text_form"):
             # 共通のフォント選択
-            available_fonts = ["NotoSerifJP-Black", "NotoSerifJP-Bold", "NotoSerifJP-SemiBold","HGRPP1", "meiryo", "meiryob", "BIZ-UDGothicR", "BIZ-UDGothicB", "YuGothR", "YuGothB", ]
+            available_fonts = ["NotoSerifJP-Black", "NotoSerifJP-Bold", "NotoSerifJP-SemiBold", "meiryo", "meiryob", "BIZ-UDGothicR", "BIZ-UDGothicB", "YuGothR", "YuGothB", "HGRPP1"]
             font_name = st.selectbox("フォントを選択してください", available_fonts, index=3)
 
             # 名言の入力
