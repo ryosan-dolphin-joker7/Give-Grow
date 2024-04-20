@@ -64,4 +64,4 @@ def edited_image(selected_quote):
             image_with_text = add_text_to_image(image.copy(), text, (position_x, position_y), font_name, font_size, text_color)
             st.session_state['image_with_text'] = image_with_text
             st.session_state['text_added'] = True
-            st.image(image_with_text, caption='編集後の画像')
+            st.image(image_with_text, caption='画像ができました🧚‍♀️')
