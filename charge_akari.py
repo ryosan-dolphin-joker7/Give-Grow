@@ -93,11 +93,11 @@ with tab1:
 with tab2:
     st.image('img/akari_icon.png', caption='名言を使って元気チャージ！')
     st.header("元気チャージャーあかりちゃん")
-    st.sidebar.header('あかりちゃんの設定')
+    st.subheader('あかりちゃんの設定')
 
     # モード選択
     mode = {'自動モード': 'Auto', '手動モード': 'Manual'}
-    selected_mode = st.sidebar.selectbox('手動・自動モードを選択してください', list(mode.keys()))
+    selected_mode = st.selectbox('手動・自動モードを選択してください', list(mode.keys()))
     st.session_state.selected_mode = mode[selected_mode]
 
     # スタイル選択
@@ -108,7 +108,7 @@ with tab2:
         'わんこ先生': '語尾に「ワン」とつく文章',
         'にゃんこ先生': '「にゃんにゃん」だけで表現した文章'
     }
-    selected_type = st.sidebar.selectbox('どんなスタイルにするか選択してください', list(types.keys()), index=0)
+    selected_type = st.selectbox('どんなスタイルにするか選択してください', list(types.keys()), index=0)
     st.session_state.selected_type = types[selected_type]
 
 
@@ -118,7 +118,7 @@ with tab2:
         response = f"あなたの悩み「{user_msg}」をもとに、私（あかり）は、あなたに励ましのメッセージを贈ります。"
         st.write(response)
 
-    if st.sidebar.button('あかりちゃんからメッセージをもらう'):
+    if st.button('あかりちゃんからメッセージをもらう'):
         # ユーザーの悩みと選択スタイルを取得
         content_text_to_gpt = st.session_state.content_text_to_gpt
         selected_type = st.session_state.selected_type
@@ -131,7 +131,7 @@ with tab2:
 
         text_to_slack.send_slack_message(output_text)
 
-    if st.sidebar.button('あかりちゃんからのメッセージをSlackに投稿'):
+    if st.button('あかりちゃんからのメッセージをSlackに投稿'):
         text_to_slack.send_slack_message(output_text)
 
 # アバターの設定
