@@ -69,18 +69,10 @@ with tab1:
             st.session_state.selected_quote = selected_quote
             if image_url:
                 st.image(image_url, caption=f"名言「{selected_quote}」に関連する画像", width=300)
-                
             else:
                 st.error("関連する画像が見つかりませんでした。")
-    st.header("画像にテキストを追加")
-    edited_image()  # 画像編集機能を呼び出す
-
-    if 'selected_quote' in st.session_state:
-        st.header('画像編集アプリ')
-        # 画像を編集する関数を実行する
-        edited_image.edited_image(st.session_state.selected_quote)
-    else:
-        st.write("画像を編集する名言が選択されていません。")
+            # 画像編集機能を呼び出す
+            edited_image(selected_quote)
 
 with tab2:
     st.header("励ましBOT 元気チャージャーあかりちゃん")
