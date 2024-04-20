@@ -33,9 +33,9 @@ def add_text_to_image(image, text, position, font_name, font_size, text_color, m
         f"./fonts/{font_name}.otf",
         f"./fonts/{font_name}.ttc",
         f"./fonts/{font_name}.ttf"
-        f".\fonts\{font_name}.otf",
-        f".\fonts\{font_name}.ttc",
-        f".\fonts\{font_name}.ttf"
+        f".\\fonts\\{font_name}.otf",
+        f".\\fonts\\{font_name}.ttc",
+        f".\\fonts\\{font_name}.ttf"
     ]
     font = None
     for path in font_paths:
