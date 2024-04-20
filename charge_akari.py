@@ -90,19 +90,6 @@ with tab1:
             # 画像編集機能を呼び出す
             edited_image(selected_quote, quote_details['author'])
 
-            # fetch_image_url関数を使って画像のURLを取得する（fetch_image_url関数の実装は既に提供されています）
-            '''
-            image_url = meigen_source.fetch_image_url("Python ロゴ")
-
-            if image_url:
-            # URLから画像データを取得
-                image_data = fetch_image_data(image_url)
-                if image_data:
-                    # PILを使用して画像データからImageオブジェクトを作成
-                    image = Image.open(image_data)
-                    # Streamlitを使用して画像を表示
-                    st.image(image, caption="検索結果の画像")
-                    '''
 
 with tab2:
     st.image('img/akari_icon.png', caption='名言を使って元気チャージ！')
