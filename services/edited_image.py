@@ -71,11 +71,11 @@ def edited_image(selected_quote):
             available_fonts = ["NotoSerifJP-Black", "NotoSerifJP-Bold", "NotoSerifJP-SemiBold","HGRPP1", "meiryo", "meiryob", "BIZ-UDGothicR", "BIZ-UDGothicB", "YuGothR", "YuGothB", ]
             font_name = st.selectbox("フォントを選択してください", available_fonts, index=3)
             text = st.text_input("画像に挿入するテキストを入力してください", selected_quote)
-            position_x = st.number_input("テキストのX座標を入力", value=70)
-            position_y = st.number_input("テキストのY座標を入力", value=60)
+            position_x = st.slider("テキストのX座標を入力", 0, 500, 70)
+            position_y = st.slider("テキストのY座標を入力", 0, 100, 60)
             font_size = st.number_input("フォントサイズを入力してください", value=35, min_value=1)
             text_color = st.color_picker("テキストの色を選択してください", "#141313")
-            max_width = st.slider("テキストの最大幅を設定", 20, 500, 200)
+            max_width = st.slider("テキストの最大幅を設定", 20, 500, 100)
             
             submitted = st.form_submit_button("テキストを更新")
 
