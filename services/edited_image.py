@@ -53,6 +53,7 @@ def add_text_to_image(image, text, position, font_name, font_size, text_color, m
 def edited_image(selected_quote, selected_author):
     img_folder_path = './img/image_template'
     available_images = [f for f in os.listdir(img_folder_path) if os.path.isfile(os.path.join(img_folder_path, f))]
+    st.markdown('##')
     st.subheader("③ 名言を入れ込む画像を用意してください")
     uploaded_file = st.file_uploader("③-A アップロード ※任意の画像がない場合はUP不要", type=['png', 'jpg', 'jpeg'], key=f"file_uploader_{selected_quote}")
 
@@ -63,6 +64,7 @@ def edited_image(selected_quote, selected_author):
         st.session_state['text_added'] = False
     else:
         selected_image_file = st.selectbox('③-B テンプレートから選択 ※オススメ✨', available_images, key=f"image_{selected_quote}")
+        st.markdown('##')
         if selected_image_file:
             image_path = os.path.join(img_folder_path, selected_image_file)
             image = Image.open(image_path)
