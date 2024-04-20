@@ -95,7 +95,7 @@ with tab2:
     selected_type = st.sidebar.selectbox('どんなスタイルにするか選択してください', list(types.keys()))
     st.session_state.selected_type = types[selected_type]
 
-    user_msg = st.text_input("何に悩んでいますか？")
+    user_msg = st.text_input("あなたの心配事やお悩みをお聞かせください。")
     if user_msg:
         st.session_state.content_text_to_gpt = user_msg
         response = f"あなたの悩み「{user_msg}」をもとに励ましメッセージを生成します。"
