@@ -67,7 +67,7 @@ tab1, tab2 = st.tabs(["名言元気玉🐉", "元気チャージャーあかり�
 
 with tab1:
     st.image('img/image_template/sample.png', caption='名言で元気をチャージ！')
-    st.write("①名言を抽出してください")
+    st.subheader("① 名言を抽出してください")
 
     if st.button("ランダムに名言を抽出"):
         random_quotes = load_quotes_from_db()
@@ -77,14 +77,19 @@ with tab1:
 
     # 名言の選択
     if 'random_quotes' in st.session_state and not st.session_state.random_quotes.empty:
-        selected_quote = st.selectbox('②名言を選択してください', st.session_state.random_quotes['quote'])
+        st.markdown('##')
+        st.subheader("② 名言を選択してください")
+        selected_quote = st.selectbox('', st.session_state.random_quotes['quote'])
         if selected_quote:
             quote_details = st.session_state.random_quotes[st.session_state.random_quotes['quote'] == selected_quote].iloc[0]
-            st.write('選択された名言:', selected_quote)
-            st.write('by:', quote_details['author'])
+            st.write('選択された名言:', "『" + selected_quote + "』 by:" + quote_details['author'])
             image_url = meigen_source.fetch_image_url(selected_quote, quote_details['author'])
             if image_url:
-                st.image(image_url, caption=f"名言「{selected_quote}」に関連する画像", width=300)
+                col1, col2, col3 = st.columns([2, 2, 1])  # 画像とキャプションの比率を3:1に設定
+                with col1:
+                    st.image(image_url, width=300)  # 画像を表示
+                with col2:
+                    st.write(f"名言「{selected_quote}」に関連する画像")  # キャプションを表示
             else:
                 st.error("関連する画像が見つかりませんでした。")
             # 画像編集機能を呼び出す
