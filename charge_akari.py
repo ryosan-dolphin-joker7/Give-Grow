@@ -58,14 +58,16 @@ with tab1:
                 
                 # edited_image 関数を呼び出す条件を満たした場合のみ実行
                 edited_image.edited_image(selected_quote)
-                
+                st.session_state.selected_quote = selected_quote
             else:
                 st.error("関連する画像が見つかりませんでした。")
 
-
-    st.header('画像編集アプリ')
-    # 画像を編集する関数を実行する
-    edited_image.edited_image(selected_quote)
+    if 'selected_quote' in st.session_state:
+        st.header('画像編集アプリ')
+        # 画像を編集する関数を実行する
+        edited_image.edited_image(st.session_state.selected_quote)
+    else:
+        st.write("画像を編集する名言が選択されていません。")
 
 with tab2:
     st.header("励ましBOT 元気チャージャーあかりちゃん")

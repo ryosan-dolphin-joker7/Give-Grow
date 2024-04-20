@@ -33,7 +33,7 @@ def add_text_to_image(image, text, position, font_name, font_size, text_color):
     
 def edited_image(selected_quote):
 
-    uploaded_file = st.file_uploader("画像をアップロードしてください", type=['png', 'jpg', 'jpeg'], key="image_uploader")
+    uploaded_file = st.file_uploader("画像をアップロードしてください", type=['png', 'jpg', 'jpeg'], key=f"image_uploader_{selected_quote}")
 
     # アップロードされたファイルがあるかどうか確認
     if uploaded_file is not None:
