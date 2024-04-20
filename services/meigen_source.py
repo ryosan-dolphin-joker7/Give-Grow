@@ -50,7 +50,6 @@ def fetch_image_data(image_url):
         return None
 
 # fetch_image_url関数を使って画像のURLを取得する（fetch_image_url関数の実装は既に提供されています）
-image_url = fetch_image_url("Python ロゴ")
 
 if image_url:
     # URLから画像データを取得
