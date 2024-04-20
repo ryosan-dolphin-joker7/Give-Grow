@@ -81,8 +81,7 @@ with tab1:
             quote_details = st.session_state.random_quotes[st.session_state.random_quotes['quote'] == selected_quote].iloc[0]
             st.write('選択された名言:', selected_quote)
             st.write('by:', quote_details['author'])
-            image_url = meigen_source.fetch_image_url(selected_quote)
-            st.session_state.selected_quote = selected_quote
+            image_url = meigen_source.fetch_image_url(selected_quote, quote_details['author'])
             if image_url:
                 st.image(image_url, caption=f"名言「{selected_quote}」に関連する画像", width=300)
             else:
@@ -122,8 +121,9 @@ with tab2:
         'わんこ先生': '語尾に「ワン」とつく文章',
         'にゃんこ先生': '「にゃんにゃん」だけで表現した文章'
     }
-    selected_type = st.sidebar.selectbox('どんなスタイルにするか選択してください', list(types.keys()))
+    selected_type = st.sidebar.selectbox('どんなスタイルにするか選択してください', list(types.keys()), index=0)
     st.session_state.selected_type = types[selected_type]
+
 
     user_msg = st.text_input("あなたの心配事やお悩みをお聞かせください。")
     if user_msg:
@@ -131,9 +131,9 @@ with tab2:
         response = f"あなたの悩み「{user_msg}」をもとに励ましメッセージを生成します。"
         st.write(response)
 
-    if st.sidebar.button('名言を加工'):
-        output_text = meigen_gpt.make_meigen(st.session_state.content_text_to_gpt, st.session_state.selected_type)
-        st.write("加工後の名言:", output_text)
+    if st.sidebar.button('あかりちゃんからメッセージをもらう'):
+        output_text = meigen_gpt.make_meigen(st.session_state.content_text_to_gpt, "", st.session_state.selected_type)
+        st.write("あかりちゃんからのメッセージ:", output_text)
         text_to_slack.send_slack_message(output_text)
 
     if st.sidebar.button('加工した名言をSlackに投稿'):
