@@ -5,3 +5,4 @@ BeautifulSoup4
 python-dotenv
 openai
 google-api-python-client
+sqlite3
