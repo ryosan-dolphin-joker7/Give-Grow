@@ -65,8 +65,7 @@ with tab1:
             quote_details = st.session_state.random_quotes[st.session_state.random_quotes['quote'] == selected_quote].iloc[0]
             st.write('選択された名言:', selected_quote)
             st.write('by:', quote_details['author'])
-            image_url = meigen_source.fetch_image_url(selected_quote)
-            st.session_state.selected_quote = selected_quote
+            image_url = meigen_source.fetch_image_url(selected_quote, quote_details['author'])
             if image_url:
                 st.image(image_url, caption=f"名言「{selected_quote}」に関連する画像", width=300)
             else:
