@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
+import uuid
 
 def add_text_to_image(image, text, position, font_name, font_size, text_color):
     """画像にテキストを挿入する関数"""
@@ -32,8 +33,9 @@ def add_text_to_image(image, text, position, font_name, font_size, text_color):
     return image
     
 def edited_image(selected_quote):
-
-    uploaded_file = st.file_uploader("画像をアップロードしてください", type=['png', 'jpg', 'jpeg'], key=f"image_uploader_{selected_quote}")
+    # 画像アップローダーのキー生成にUUIDを使用
+    unique_key = f"image_uploader_{uuid.uuid4()}"
+    uploaded_file = st.file_uploader("画像をアップロードしてください", type=['png', 'jpg', 'jpeg'], key=unique_key)
 
     # アップロードされたファイルがあるかどうか確認
     if uploaded_file is not None:
