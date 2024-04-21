@@ -82,22 +82,25 @@ def edited_image(selected_quote, selected_author,index):
 ④必要に応じて文字のフォント・改行・位置を調整してください
 """)
             font_name = st.selectbox("フォントを選択", available_fonts, index=3)
-
+            ## 2つのカラムを作成
+            col1, col2 = st.columns(2)
+            with col1:
             # 名言の入力
-            quote_text = st.text_input("名言の調整 ❔スペースを空けると改行できます", selected_quote)
-            quote_position_x = st.slider("名言のX座標を入力", 0, 500, 70)
-            quote_position_y = st.slider("名言のY座標を入力", 0, 500, 60)
-            quote_font_size = st.number_input("名言のフォントサイズを入力", value=35, min_value=1, key='quote_font_size')
-            quote_text_color = st.color_picker("名言の色を選択", "#141313")
-            quote_max_width = st.slider("名言の最大幅を設定", 200, 1000, 500)
+                quote_text = st.text_input("名言の調整 ❔スペースを空けると改行できます", selected_quote)
+                quote_position_x = st.slider("名言のX座標を入力", 0, 500, 70)
+                quote_position_y = st.slider("名言のY座標を入力", 0, 500, 60)
+                quote_font_size = st.number_input("名言のフォントサイズを入力", value=35, min_value=1, key='quote_font_size')
+                quote_text_color = st.color_picker("名言の色を選択", "#141313")
+                quote_max_width = st.slider("名言の最大幅を設定", 200, 1000, 500)
 
             # 著者の入力
-            author_text = st.text_input("元ネタの調整", "by " + selected_author)
-            author_position_x = st.slider("著者名のX座標を入力", 0, 500, 200)
-            author_position_y = st.slider("著者名のY座標を入力", 0, 500, 200)
-            author_font_size = st.number_input("著者名のフォントサイズを入力", value=15, min_value=1, key='author_font_size')
-            author_text_color = st.color_picker("著者名の色を選択", "#141313")
-            author_max_width = st.slider("著者名の最大幅を設定", 200, 1000, 300)
+            with col2:
+                author_text = st.text_input("元ネタの調整", "by " + selected_author)
+                author_position_x = st.slider("著者名のX座標を入力", 0, 500, 200)
+                author_position_y = st.slider("著者名のY座標を入力", 0, 500, 200)
+                author_font_size = st.number_input("著者名のフォントサイズを入力", value=15, min_value=1, key='author_font_size')
+                author_text_color = st.color_picker("著者名の色を選択", "#141313")
+                author_max_width = st.slider("著者名の最大幅を設定", 200, 1000, 300)
 
             submitted = st.form_submit_button("変更を反映")
 
