@@ -83,6 +83,73 @@ with tab1:
         st.session_state.selected_quote = ""
     if 'matched_quotes' not in st.session_state:
         st.session_state.matched_quotes = ""
+    if 'quote_author_mapping' not in st.session_state:
+        st.session_state.quote_author_mapping = {}
+
+    def display_quote_selection_from_dropdown():
+        """
+        ドロップダウンから名言を選択し、選択された名言と著者を表示する関数。
+        選択された名言に基づいて画像を表示する。
+        """
+        if st.session_state.quote_options:
+            st.markdown('##')
+            st.subheader("② 名言を選択してください")
+            selected_quote_text = st.selectbox(
+                'プルダウンで名言を1つ選択してください',
+                st.session_state.quote_options,
+                index=st.session_state.quote_options.index(st.session_state.selected_quote) 
+                if st.session_state.selected_quote in st.session_state.quote_options else 0,
+                key="selected_quote_dyn"
+            )
+
+            selected_author = st.session_state.quote_author_mapping.get(selected_quote_text, "不明な著者")
+            st.session_state.selected_quote = (selected_quote_text, selected_author)
+            st.write(f"選択した名言: 「{selected_quote_text}」 by {selected_author}")
+
+    def display_quote_selection():
+        if st.session_state.quote_options:
+            st.markdown('##')
+            st.subheader("② 名言を選択してください")
+            options = [(q, st.session_state.quote_author_mapping[q]) for q in st.session_state.quote_options]
+            selected_option = st.selectbox(
+                'プルダウンで名言を1つ選択してください',
+                options,
+                format_func=lambda option: f"{option[0]} by {option[1]}"
+            )
+            st.session_state.selected_quote = selected_option
+            st.write(f"選択した名言: 「{selected_option[0]}」 by {selected_option[1]}")
+
+    def handle_random_quote_selection():
+        """
+        データベースからランダムに名言を抽出し、抽出された名言のリストを表示する関数。
+        ユーザーによる名言の選択に基づいて、選択された名言と著者を表示し、関連画像を表示する。
+        """
+        if st.button("ランダムに名言を抽出します"):
+            random_quotes = load_quotes_from_db()
+            st.session_state.random_quotes = random_quotes
+            if not random_quotes.empty:
+                st.dataframe(random_quotes[['quote', 'author', 'url']])
+
+        if 'random_quotes' in st.session_state and not st.session_state.random_quotes.empty:
+            st.markdown('##')
+            st.subheader("② 名言を選択してください")
+            selected_quote = st.selectbox('', st.session_state.random_quotes['quote'])
+            if selected_quote:
+                quote_details = st.session_state.random_quotes[st.session_state.random_quotes['quote'] == selected_quote].iloc[0]
+                st.write(f'選択された名言: "『{selected_quote}』 by: {quote_details["author"]}')
+                # 選択された名言と著者をセッションステートに保存
+                st.session_state.selected_quote = (selected_quote, quote_details["author"])
+
+    def fetch_and_display_image(quote_text, author):
+        """
+        指定された名言と著者に基づいて画像URLを取得し、画像を表示する関数。
+        画像が見つからない場合はエラーメッセージを表示する。
+        """
+        image_url = meigen_source.fetch_image_url(quote_text, author)
+        if image_url:
+            st.image(image_url, caption=f"名言「{quote_text}」に関連する画像", width=300)
+        else:
+            st.error("関連する画像が見つかりませんでした。")
 
     # ユーザー入力
     keyword = st.text_input('ここにキーワードを入力してください', key="keyword")
@@ -114,57 +181,19 @@ with tab1:
         st.session_state.selected_quote = st.session_state.quote_options[0]
 
     # 検索結果がある場合にのみプルダウンを表示
-    if st.session_state.quote_options:
-        selected_quote_text = st.selectbox(
-            'プルダウンで名言を1つ選択してください',
-            st.session_state.quote_options,
-            index=st.session_state.quote_options.index(st.session_state.selected_quote) if st.session_state.selected_quote in st.session_state.quote_options else 0,
-            key="selected_quote_dyn"
-        )
-        # 選択されたquoteに基づいて、対応するauthorを取得
-        selected_author = st.session_state.quote_author_mapping[selected_quote_text]
-        # 選択されたquoteとauthorを保存
-        st.session_state.selected_quote = (selected_quote_text, selected_author)
-        # 選択された名言を表示
-        st.write(f"選択した名言:\n{st.session_state.selected_quote[0]}")
+    # display_quote_selection_from_dropdown()
+    display_quote_selection()
+
+    # ランダムに名言を選択します
+    handle_random_quote_selection()
 
     # 選択した名言の画像を検索します
-    if st.button("選択した名言で画像を検索"):
-        # 名言の選択
-        if st.session_state.selected_quote:
-            st.write('選択された名言:', st.session_state.selected_quote[0])
-            image_url = meigen_source.fetch_image_url(st.session_state.selected_quote[0], st.session_state.selected_quote[1])
-            if image_url:
-                st.image(image_url, caption=f"名言「{st.session_state.selected_quote[0]}」に関連する画像", width=300)
-            else:
-                st.error("関連する画像が見つかりませんでした。")
-
-
-    # 名言をDBからランダムで抽出する
-    if st.button("ランダムに名言を抽出"):
-        random_quotes = load_quotes_from_db()
-        st.session_state.random_quotes = random_quotes
-        if not random_quotes.empty:
-            st.dataframe(random_quotes[['quote', 'author', 'url']])
-
-    # 名言の選択
-    if 'random_quotes' in st.session_state and not st.session_state.random_quotes.empty:
-        st.markdown('##')
-        st.subheader("② 名言を選択してください")
-        selected_quote = st.selectbox('', st.session_state.random_quotes['quote'])
-        if selected_quote:
-            quote_details = st.session_state.random_quotes[st.session_state.random_quotes['quote'] == selected_quote].iloc[0]
-            st.write('選択された名言:', "『" + selected_quote + "』 by:" + quote_details['author'])
-            image_url = meigen_source.fetch_image_url(selected_quote, quote_details['author'])
-            if image_url:
-                st.image(image_url, width=300, caption="参考画像")  # 画像を表示
-            else:
-                st.error("関連する画像が見つかりませんでした。")
-            # 画像編集機能を呼び出す
-            edited_image(selected_quote, quote_details['author'])
+    if st.button("選択した名言で画像を検索") and st.session_state.selected_quote:
+        fetch_and_display_image(*st.session_state.selected_quote)
 
     # 名言が選択された場合にのみ画像編集機能を表示
-    if st.session_state.input_text_to_image:
+    if st.button("画像の編集"):
+        if st.session_state.selected_quote:
             # 画像編集機能を呼び出す
             edited_image(st.session_state.selected_quote[0], st.session_state.selected_quote[1])
 
