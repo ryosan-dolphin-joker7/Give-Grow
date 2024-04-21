@@ -86,7 +86,7 @@ def edited_image(selected_quote, selected_author,index):
             col1, col2 = st.columns(2)
             with col1:
             # 名言の入力
-                quote_text = st.text_input("名言の調整", selected_quote)
+                quote_text = st.text_input("名言の調整 ❔スペースを空けると改行できます", selected_quote)
                 quote_position_x = st.slider("名言のX座標を入力", 0, 500, 70)
                 quote_position_y = st.slider("名言のY座標を入力", 0, 500, 60)
                 quote_font_size = st.number_input("名言のフォントサイズを入力", value=35, min_value=1, key='quote_font_size')
