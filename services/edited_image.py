@@ -96,9 +96,9 @@ def edited_image(selected_quote, selected_author):
             author_text_color = st.color_picker("著者名の色を選択", "#141313")
             author_max_width = st.slider("著者名の最大幅を設定", 200, 1000, 300)
 
-            submitted = st.form_submit_button("変更を反映")
+            st.session_state.submitted = st.form_submit_button("変更を反映")
 
-            if submitted or not st.session_state.get('text_added', False):
+            if st.session_state.submitted or not st.session_state.get('text_added', False):
                 # 名言を画像に追加
                 image_with_text = add_text_to_image(image.copy(), quote_text, (quote_position_x, quote_position_y), font_name, quote_font_size, quote_text_color, quote_max_width)
                 # 著者を画像に追加

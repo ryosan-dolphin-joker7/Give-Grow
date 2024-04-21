@@ -129,7 +129,7 @@ with tab1:
         st.write(f"選択した名言:\n{st.session_state.selected_quote[0]}")
 
     # 選択した名言の画像を検索します
-    if st.button("選択した名言を使う"):
+    if st.button("選択した名言で画像を検索"):
         # 名言の選択
         if st.session_state.selected_quote:
             st.write('選択された名言:', st.session_state.selected_quote[0])
@@ -138,8 +138,6 @@ with tab1:
                 st.image(image_url, caption=f"名言「{st.session_state.selected_quote[0]}」に関連する画像", width=300)
             else:
                 st.error("関連する画像が見つかりませんでした。")
-            # 画像編集機能を呼び出す
-            edited_image(st.session_state.selected_quote[0], st.session_state.selected_quote[1])
 
 
     # 名言をDBからランダムで抽出する
@@ -164,6 +162,11 @@ with tab1:
                 st.error("関連する画像が見つかりませんでした。")
             # 画像編集機能を呼び出す
             edited_image(selected_quote, quote_details['author'])
+
+    # 名言が選択された場合にのみ画像編集機能を表示
+    if st.session_state.input_text_to_image:
+            # 画像編集機能を呼び出す
+            edited_image(st.session_state.selected_quote[0], st.session_state.selected_quote[1])
 
 with tab2:
     st.image('img/akari_icon.png', caption='名言を使って元気チャージ！')
