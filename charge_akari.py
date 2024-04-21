@@ -75,7 +75,9 @@ tab1, tab2 = st.tabs(["🐉名言元気玉", "🧚元気チャージャーあか
 
 with tab1:
     st.image('img/genkidama2.png')
-    st.subheader("① 名言を抽出してください")
+    st.subheader("① 名言の泉から利用する言葉を選んでください")
+    st.write("🔍キーワード検索はキーワードが明確な場合にオススメ")
+    st.write("🤖ランダム抽出は自分に合ったものを直感的に探したい場合にオススメ")
 
     # 初期化
     if 'quote_options' not in st.session_state:
@@ -86,10 +88,10 @@ with tab1:
         st.session_state.matched_quotes = ""
 
     # ユーザー入力
-    keyword = st.text_input('ここにキーワードを入力してください', key="keyword")
+    keyword = st.text_input('①-A 🔍キーワード検索', key="keyword")
 
     # 検索ボタンが押されたときの処理
-    if st.button("名言を検索", key="search"):
+    if st.button("検索", key="search"):
         if keyword:  # キーワードが入力されているか確認
             matched_quotes = search_quotes('DB/output.csv', keyword)
             if matched_quotes is not None and not matched_quotes.empty:
@@ -103,9 +105,9 @@ with tab1:
                 # 一致した名言をデータフレームとして表示
                 st.dataframe(matched_quotes, use_container_width=True)
             else:
-                st.write("一致する名言が見つかりませんでした。")
+                st.write("⚠️一致する名言が見つかりませんでした。")
         else:
-            st.write("キーワードを入力してください。")
+            st.write("⚠️キーワードを入力してください。")
 
         # quoteをキーとし、対応するauthorを値とする辞書をセッションステートに保存
         st.session_state.quote_author_mapping = {quote: author for quote, author in zip(matched_quotes['quote'], matched_quotes['author'])}
@@ -117,7 +119,7 @@ with tab1:
     # 検索結果がある場合にのみプルダウンを表示
     if st.session_state.quote_options:
         selected_quote_text = st.selectbox(
-            'プルダウンで名言を1つ選択してください',
+            '利用する名言を選択してください',
             st.session_state.quote_options,
             index=st.session_state.quote_options.index(st.session_state.selected_quote) if st.session_state.selected_quote in st.session_state.quote_options else 0,
             key="selected_quote_dyn"
@@ -126,14 +128,13 @@ with tab1:
         selected_author = st.session_state.quote_author_mapping[selected_quote_text]
         # 選択されたquoteとauthorを保存
         st.session_state.selected_quote = (selected_quote_text, selected_author)
-        # 選択された名言を表示
-        st.write(f"選択した名言:\n{st.session_state.selected_quote[0]}")
+
 
     # 選択した名言の画像を検索します
-    if st.button("選択した名言を使う"):
+    if st.button("この名言を使う"):
         # 名言の選択
         if st.session_state.selected_quote:
-            st.write('選択された名言:', st.session_state.selected_quote[0])
+            st.write('あなたが選んだ名言:', st.session_state.selected_quote[0])
             image_url = meigen_source.fetch_image_url(st.session_state.selected_quote[0], st.session_state.selected_quote[1])
             if image_url:
                 st.image(image_url, caption=f"名言「{st.session_state.selected_quote[0]}」に関連する画像", width=300)
@@ -144,7 +145,8 @@ with tab1:
 
 
     # 名言をDBからランダムで抽出する
-    if st.button("ランダムに名言を抽出"):
+    st.write("①-B 🤖ランダム抽出")
+    if st.button("名言を抽出"):
         random_quotes = load_quotes_from_db()
         st.session_state.random_quotes = random_quotes
         if not random_quotes.empty:
