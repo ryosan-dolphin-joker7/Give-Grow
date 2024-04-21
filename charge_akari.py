@@ -30,7 +30,8 @@ st.set_page_config(
 
 from services import meigen_gpt,text_to_slack,meigen_scraping,meigen_source
 from services.edited_image import edited_image
-from services.meigen_search import search_quotes
+from services.meigen_gpt import make_meigen
+from services.text_to_slack import send_slack_message
 
 # meigen_gpt        ：テキストをGPTに送る関数です
 # text_to_slack     ：slackにテキストを送る関数です
@@ -49,25 +50,29 @@ st.title('⛲名言の泉⛲')
 st.write("""
 心に響く名言があなたを待っています。名言の泉は、あなたが必要とする元気とインスピレーションを提供します。このアプリは、世界中の有名な人々の名言を集め、あなたに合わせて提供します。
 """)
+st.markdown('##')
 
-st.subheader("機能1 名言元気玉🐉")
+st.header("アプリ概要")
+st.write("名言の泉は以下の2つの機能で構成されています。")
+st.subheader("🐉名言元気玉")
 st.write("""
 ３万件の名言から、あなたが必要とする名言を見つけるための強力なツールです。あなたの大切な組織を励ますための完璧な名言を見つけることができます。元気玉によって、あなたのコミュニティにポジティブなエネルギーを広めるのに役立ちます。
 """)
 
-st.subheader("機能2 元気チャージャーあかりちゃん🧚")
+st.subheader("🧚元気チャージャーあかりちゃん")
 st.write("""
 あなたが直面している課題や悩みに対して名言のメタファーを取り入れて励ましてくれるAIです。あかりちゃんは、あなたが困難な状況を乗り越えるための頼もしいパートナーです。
 """)
+st.markdown('##')
 
 
 
 # タブの設定
-tab1, tab2 = st.tabs(["名言元気玉🐉", "元気チャージャーあかりちゃん🧚"])
+tab1, tab2 = st.tabs(["🐉名言元気玉", "🧚元気チャージャーあかりちゃん"])
 
 
 with tab1:
-    st.image('img/image_template/sample.png', caption='名言で元気をチャージ！')
+    st.image('img/genkidama2.png')
     st.subheader("① 名言を抽出してください")
 
     # 初期化
@@ -153,11 +158,7 @@ with tab1:
             st.write('選択された名言:', "『" + selected_quote + "』 by:" + quote_details['author'])
             image_url = meigen_source.fetch_image_url(selected_quote, quote_details['author'])
             if image_url:
-                col1, col2, col3 = st.columns([2, 2, 1])  # 画像とキャプションの比率を3:1に設定
-                with col1:
-                    st.image(image_url, width=300)  # 画像を表示
-                with col2:
-                    st.write(f"名言「{selected_quote}」に関連する画像")  # キャプションを表示
+                st.image(image_url, width=300, caption="参考画像")  # 画像を表示
             else:
                 st.error("関連する画像が見つかりませんでした。")
             # 画像編集機能を呼び出す
@@ -196,16 +197,23 @@ with tab2:
         content_text_to_gpt = st.session_state.content_text_to_gpt
         selected_type = st.session_state.selected_type
 
+        # Initialize session state
+        if 'output_text' not in st.session_state:
+            st.session_state.output_text = None
         # GPT で励ましのメッセージを生成
         output_text = meigen_gpt.make_meigen(content_text_to_gpt, selected_type)
+        st.session_state.output_text = output_text
 
         # 生成されたメッセージを出力
-        st.write("あかりちゃんからのメッセージ:", output_text)
-
-        text_to_slack.send_slack_message(output_text)
+        if st.session_state.output_text:
+            st.write("あかりちゃんからのメッセージ:", st.session_state.output_text)
 
     if st.button('あかりちゃんからのメッセージをSlackに投稿'):
-        text_to_slack.send_slack_message(output_text)
+        if st.session_state.output_text:
+            text_to_slack.send_slack_message(st.session_state.output_text)
+        # Clear session state after posting to Slack
+            st.session_state.output_text = None
+
 
 # アバターの設定
 img_ASSISTANT = Image.open("img/akari_icon.png")
