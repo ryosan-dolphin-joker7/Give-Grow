@@ -129,16 +129,23 @@ with tab2:
         content_text_to_gpt = st.session_state.content_text_to_gpt
         selected_type = st.session_state.selected_type
 
+        # Initialize session state
+        if 'output_text' not in st.session_state:
+            st.session_state.output_text = None
         # GPT で励ましのメッセージを生成
         output_text = meigen_gpt.make_meigen(content_text_to_gpt, selected_type)
+        st.session_state.output_text = output_text
 
         # 生成されたメッセージを出力
-        st.write("あかりちゃんからのメッセージ:", output_text)
-
-        text_to_slack.send_slack_message(output_text)
+        if st.session_state.output_text:
+            st.write("あかりちゃんからのメッセージ:", st.session_state.output_text)
 
     if st.button('あかりちゃんからのメッセージをSlackに投稿'):
-        text_to_slack.send_slack_message(output_text)
+        if st.session_state.output_text:
+            text_to_slack.send_slack_message(st.session_state.output_text)
+        # Clear session state after posting to Slack
+            st.session_state.output_text = None
+
 
 # アバターの設定
 img_ASSISTANT = Image.open("img/akari_icon.png")
