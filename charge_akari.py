@@ -170,8 +170,13 @@ with tab2:
     st.subheader('あかりちゃんの設定')
 
     # モード選択
-    mode = {'自動モード': 'Auto', '手動モード': 'Manual'}
-    selected_mode = st.selectbox('手動・自動モードを選択してください', list(mode.keys()))
+    mode = {'手動モード': 'Manual','自動モード': 'Auto' }
+    st.write("""
+            👋手動モードでは、あかりちゃんのメッセージのスタイルやSlackへの投稿をあなた自身がコントロールできます。\n
+            💻自動モードでは、あかりちゃんがメッセージのスタイルやSlackへの投稿を全て管理します。
+            """)
+    
+    selected_mode = st.selectbox('手動モード・自動モードを選択してください', list(mode.keys()))
     st.session_state.selected_mode = mode[selected_mode]
 
     # スタイル選択
@@ -182,11 +187,11 @@ with tab2:
         'わんこ先生': '語尾に「ワン」とつく文章',
         'にゃんこ先生': '「にゃんにゃん」だけで表現した文章'
     }
-    selected_type = st.selectbox('どんなスタイルにするか選択してください', list(types.keys()), index=0)
+    selected_type = st.selectbox('あかりちゃんのメッセージのスタイルを選択してください', list(types.keys()), index=0)
     st.session_state.selected_type = types[selected_type]
 
 
-    user_msg = st.text_input("あなたの心配事やお悩みをお聞かせください。")
+    user_msg = st.text_input("あなたの心配事やお悩みをあかりちゃんに教えてください。")
     if user_msg:
         st.session_state.content_text_to_gpt = user_msg
         response = f"あなたの悩み「{user_msg}」をもとに、私（あかり）は、あなたに励ましのメッセージを贈ります。"
