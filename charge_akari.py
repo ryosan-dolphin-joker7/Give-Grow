@@ -4,6 +4,7 @@ import requests
 from PIL import Image
 from googleapiclient.discovery import build
 import sqlite3
+import time
 import os
 
 # 画像が保存されているフォルダのパスを指定します。
@@ -197,7 +198,46 @@ with tab2:
         response = f"あなたの悩み「{user_msg}」をもとに、私（あかり）は、あなたに励ましのメッセージを贈ります。"
         st.write(response)
 
-    if st.button('あかりちゃんからメッセージをもらう'):
+    # モード判定
+    if st.session_state.selected_mode == "自動モード":
+      # 自動モードの場合
+      def auto_process():
+        # ユーザーの悩みと選択スタイルを取得
+       content_text_to_gpt = st.session_state.content_text_to_gpt
+       selected_type = st.session_state.selected_type
+
+      # Initialize session state
+      if 'output_text' not in st.session_state:
+         st.session_state.output_text = None
+
+      # GPT で励ましのメッセージを生成
+      output_text = meigen_gpt.make_meigen(content_text_to_gpt, selected_type)
+      st.session_state.output_text = output_text
+
+      # 生成されたメッセージを出力
+      if st.session_state.output_text:
+        time.sleep(2) # 2秒間待ってからメッセージを表示
+        st.write("あかりちゃんからのメッセージ:", st.session_state.output_text)
+
+      # Slackに投稿
+      if st.session_state.output_text:
+        # スレッド処理でSlackに投稿
+        import threading
+        def send_slack_message_async():
+         text_to_slack.send_slack_message(st.session_state.output_text)
+        thread = threading.Thread(target=send_slack_message_async)
+        thread.start()
+
+        # Clear session state after posting to Slack
+        st.session_state.output_text = None
+
+      # スレッドで自動処理を実行
+      thread = threading.Thread(target=auto_process)
+      thread.start()
+
+    else:
+      # 手動モードの場合
+      if st.button('あかりちゃんからメッセージをもらう'):
         # ユーザーの悩みと選択スタイルを取得
         content_text_to_gpt = st.session_state.content_text_to_gpt
         selected_type = st.session_state.selected_type
@@ -205,22 +245,22 @@ with tab2:
         # Initialize session state
         if 'output_text' not in st.session_state:
             st.session_state.output_text = None
+           
         # GPT で励ましのメッセージを生成
         output_text = meigen_gpt.make_meigen(content_text_to_gpt, selected_type)
         st.session_state.output_text = output_text
 
         # 生成されたメッセージを出力
         if st.session_state.output_text:
-            st.write("あかりちゃんからのメッセージ:", st.session_state.output_text)
+           time.sleep(2) # 2秒間待ってからメッセージを表示
+           st.write("あかりちゃんからのメッセージ:", st.session_state.output_text)
 
-    if st.button('あかりちゃんからのメッセージをSlackに投稿'):
-        if st.session_state.output_text:
-            text_to_slack.send_slack_message(st.session_state.output_text)
-        # Clear session state after posting to Slack
-            st.session_state.output_text = None
+      # Slackに投稿するボタンがクリックされた場合
+      if st.button('あかりちゃんからのメッセージをSlackに投稿'):
+          # メッセージが存在する場合、それをSlackに投稿
+          if st.session_state.output_text:
+              text_to_slack.send_slack_message(st.session_state.output_text)
+              st.write("メッセージがSlackに投稿されました")
 
-
-# アバターの設定
-img_ASSISTANT = Image.open("img/akari_icon.png")
-img_USER = Image.open("img/Give&Grow.png")
-avatar_img_dict = {"あなた": img_USER, "あかりちゃん": img_ASSISTANT}
+          # Slackに投稿した後でセッション状態をクリア
+          st.session_state.output_text = None
