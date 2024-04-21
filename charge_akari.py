@@ -50,25 +50,29 @@ st.title('⛲名言の泉⛲')
 st.write("""
 心に響く名言があなたを待っています。名言の泉は、あなたが必要とする元気とインスピレーションを提供します。このアプリは、世界中の有名な人々の名言を集め、あなたに合わせて提供します。
 """)
+st.markdown('##')
 
-st.subheader("機能1 名言元気玉🐉")
+st.header("アプリ概要")
+st.write("名言の泉は以下の2つの機能で構成されています。")
+st.subheader("🐉名言元気玉")
 st.write("""
 ３万件の名言から、あなたが必要とする名言を見つけるための強力なツールです。あなたの大切な組織を励ますための完璧な名言を見つけることができます。元気玉によって、あなたのコミュニティにポジティブなエネルギーを広めるのに役立ちます。
 """)
 
-st.subheader("機能2 元気チャージャーあかりちゃん🧚")
+st.subheader("🧚元気チャージャーあかりちゃん")
 st.write("""
 あなたが直面している課題や悩みに対して名言のメタファーを取り入れて励ましてくれるAIです。あかりちゃんは、あなたが困難な状況を乗り越えるための頼もしいパートナーです。
 """)
+st.markdown('##')
 
 
 
 # タブの設定
-tab1, tab2 = st.tabs(["名言元気玉🐉", "元気チャージャーあかりちゃん🧚"])
+tab1, tab2 = st.tabs(["🐉名言元気玉", "🧚元気チャージャーあかりちゃん"])
 
 
 with tab1:
-    st.image('img/image_template/sample.png', caption='名言で元気をチャージ！')
+    st.image('img/genkidama2.png')
     st.subheader("① 名言を抽出してください")
 
     if st.button("ランダムに名言を抽出"):
@@ -87,11 +91,7 @@ with tab1:
             st.write('選択された名言:', "『" + selected_quote + "』 by:" + quote_details['author'])
             image_url = meigen_source.fetch_image_url(selected_quote, quote_details['author'])
             if image_url:
-                col1, col2, col3 = st.columns([2, 2, 1])  # 画像とキャプションの比率を3:1に設定
-                with col1:
-                    st.image(image_url, width=300)  # 画像を表示
-                with col2:
-                    st.write(f"名言「{selected_quote}」に関連する画像")  # キャプションを表示
+                st.image(image_url, width=300, caption="参考画像")  # 画像を表示
             else:
                 st.error("関連する画像が見つかりませんでした。")
             # 画像編集機能を呼び出す
