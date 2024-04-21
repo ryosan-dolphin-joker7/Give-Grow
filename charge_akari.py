@@ -75,6 +75,8 @@ with tab1:
         st.session_state.quote_options = []
     if 'selected_quote' not in st.session_state:
         st.session_state.selected_quote = ""
+    if 'matched_quotes' not in st.session_state:
+        st.session_state.matched_quotes = ""
 
     # ユーザー入力
     keyword = st.text_input('ここにキーワードを入力してください', key="keyword")
@@ -98,19 +100,29 @@ with tab1:
         else:
             st.write("キーワードを入力してください。")
 
+        # quoteをキーとし、対応するauthorを値とする辞書をセッションステートに保存
+        st.session_state.quote_author_mapping = {quote: author for quote, author in zip(matched_quotes['quote'], matched_quotes['author'])}
+        
+        # プルダウンの選択肢としてquoteのみを表示
+        st.session_state.quote_options = list(st.session_state.quote_author_mapping.keys())
+        st.session_state.selected_quote = st.session_state.quote_options[0]
+
     # 検索結果がある場合にのみプルダウンを表示
     if st.session_state.quote_options:
-        # プルダウンで名言を選択
-        st.session_state.selected_quote = st.selectbox(
+        selected_quote_text = st.selectbox(
             'プルダウンで名言を1つ選択してください',
             st.session_state.quote_options,
             index=st.session_state.quote_options.index(st.session_state.selected_quote) if st.session_state.selected_quote in st.session_state.quote_options else 0,
             key="selected_quote_dyn"
         )
+        # 選択されたquoteに基づいて、対応するauthorを取得
+        selected_author = st.session_state.quote_author_mapping[selected_quote_text]
+        # 選択されたquoteとauthorを保存
+        st.session_state.selected_quote = (selected_quote_text, selected_author)
         # 選択された名言を表示
         st.write(f"選択した名言:\n{st.session_state.selected_quote[0]}")
 
-    # 名言をDBからランダムで抽出する
+    # 選択した名言の画像を検索します
     if st.button("選択した名言を使う"):
         # 名言の選択
         if st.session_state.selected_quote:
