@@ -192,7 +192,7 @@ with tab1:
         fetch_and_display_image(*st.session_state.selected_quote)
 
     # 名言が選択された場合にのみ画像編集機能を表示
-    if st.button("画像の編集"):
+    if st.button("画像を編集します"):
         if st.session_state.selected_quote:
             # 画像編集機能を呼び出す
             edited_image(st.session_state.selected_quote[0], st.session_state.selected_quote[1])
