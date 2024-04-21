@@ -98,8 +98,7 @@ with tab1:
             edited_image(selected_quote, quote_details['author'])
 
 with tab2:
-    st.image('img/akari_icon.png', caption='名言を使って元気チャージ！')
-    st.header("元気チャージャーあかりちゃん")
+    st.image('img/akari_header.png')
     st.subheader('あかりちゃんの設定')
 
     # モード選択
