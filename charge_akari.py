@@ -20,7 +20,7 @@ im = Image.open(favicon_path)
 
 # Streamlitのページ設定を行います。
 st.set_page_config(
-    page_title="C_Akari", 
+    page_title="Give&Grow", 
     page_icon=im,
     layout="wide", 
     initial_sidebar_state="auto", 
