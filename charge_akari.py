@@ -130,18 +130,24 @@ with tab1:
         st.session_state.selected_quote = (selected_quote_text, selected_author)
 
 
-    # 選択した名言の画像を検索します
-    if st.button("この名言を使う"):
-        # 名言の選択
-        if st.session_state.selected_quote:
-            st.write('あなたが選んだ名言:', st.session_state.selected_quote[0])
-            image_url = meigen_source.fetch_image_url(st.session_state.selected_quote[0], st.session_state.selected_quote[1])
-            if image_url:
-                st.image(image_url, caption=f"名言「{st.session_state.selected_quote[0]}」に関連する画像", width=300)
-            else:
-                st.error("関連する画像が見つかりませんでした。")
-            # 画像編集機能を呼び出す
-            edited_image(st.session_state.selected_quote[0], st.session_state.selected_quote[1])
+    # 名言が選択されているかどうかをチェック
+    if 'selected_quote' in st.session_state and st.session_state.selected_quote:
+        selected_quote = st.session_state.selected_quote
+        
+        if st.button("この名言を使う"):
+            st.write('あなたが選んだ名言:', selected_quote[0])
+            
+            # 画像URLの取得とエラーハンドリング
+            try:
+                image_url = meigen_source.fetch_image_url(selected_quote[0], selected_quote[1])
+                if image_url:
+                    st.image(image_url, caption=f"名言「{selected_quote[0]}」に関連する画像", width=300)
+                else:
+                    st.error("関連する画像が見つかりませんでした。")
+            except Exception as e:
+                st.error(f"画像の取得中にエラーが発生しました: {e}")
+        # 名言が選択された場合、画像編集機能を呼び出す
+        edited_image(selected_quote[0], selected_quote[1], index=1)
 
 
     # 名言をDBからランダムで抽出する
@@ -166,7 +172,7 @@ with tab1:
             else:
                 st.error("関連する画像が見つかりませんでした。")
             # 画像編集機能を呼び出す
-            edited_image(selected_quote, quote_details['author'])
+            edited_image(selected_quote, quote_details['author'], index=2)
 
 with tab2:
     st.image('img/akari_header.png')

@@ -50,7 +50,10 @@ def add_text_to_image(image, text, position, font_name, font_size, text_color, m
     draw_multiline_text(draw, text, position, font, text_color, max_width)
     return image
 
-def edited_image(selected_quote, selected_author):
+def edited_image(selected_quote, selected_author,index):
+    # index引数を使ってフォームのkeyを一意にする
+    form_key = f"text_form_{index}"
+    # with st.form(key=form_key)
     img_folder_path = './img/image_template'
     available_images = [f for f in os.listdir(img_folder_path) if os.path.isfile(os.path.join(img_folder_path, f))]
     st.markdown('##')
@@ -72,7 +75,7 @@ def edited_image(selected_quote, selected_author):
             st.session_state['text_added'] = False
 
     if image:
-        with st.form("text_form"):
+        with st.form(key=form_key):
             # 共通のフォント選択
             available_fonts = ["NotoSerifJP-Black", "NotoSerifJP-Bold", "NotoSerifJP-SemiBold", "meiryo", "meiryob", "BIZ-UDGothicR", "BIZ-UDGothicB", "YuGothR", "YuGothB", "HGRPP1"]
             st.subheader("""
