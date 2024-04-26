@@ -3,7 +3,6 @@ import pandas as pd
 import requests
 from PIL import Image
 from googleapiclient.discovery import build
-import sqlite3
 import time
 import threading
 import os
@@ -34,17 +33,13 @@ from services import meigen_gpt,text_to_slack,meigen_scraping,meigen_source
 from services.edited_image import edited_image
 from services.meigen_gpt import make_meigen
 from services.text_to_slack import send_slack_message
-from services.meigen_search import search_quotes
+from services.meigen_search import search_quotes,load_quotes_from_db,search_quotes_from_db
 
 # meigen_gpt        ：テキストをGPTに送る関数です
 # text_to_slack     ：slackにテキストを送る関数です
 # meigen_source     :名言から画像を取得する関数です
 # edited_image   　 ：画像を編集する関数です
 
-# DBからランダムに20件の名言を読み込む関数
-def load_quotes_from_db():
-    with sqlite3.connect("services/quotes_20240417_135122_加工用.db") as conn:
-        return pd.read_sql_query("SELECT quote, author, url FROM quotes ORDER BY RANDOM() LIMIT 20", conn)
 
 # Streamlitアプリケーションの初期設定
 st.title('⛲名言の泉⛲')
@@ -68,7 +63,16 @@ st.write("""
 """)
 st.markdown('##')
 
+# Slackに投稿するボタンがクリックされた場合
+requests_text = st.text_input('本アプリへの要望や質問があれば教えてください！', key="requests and questions")
+if st.button('Slackに投稿'):
+    # メッセージが存在する場合、それをSlackに投稿
+    if requests_text:
+        slack_channel='#requests'
+        text_to_slack.send_slack_message(requests_text, slack_channel)
+        st.write("要望がSlackに投稿されました")
 
+st.markdown('##')
 
 # タブの設定
 tab1, tab2 = st.tabs(["🐉名言元気玉", "🧚元気チャージャーあかりちゃん"])
@@ -94,11 +98,8 @@ with tab1:
     # 検索ボタンが押されたときの処理
     if st.button("検索", key="search"):
         if keyword:  # キーワードが入力されているか確認
-            matched_quotes = search_quotes('DB/output.csv', keyword)
-            if matched_quotes is not None and not matched_quotes.empty:
-                # 検索結果をセッションステートに保存（quote）
-                # st.session_state.quote_options = matched_quotes['quote'].tolist()
-
+            matched_quotes = search_quotes_from_db(keyword)
+            if not matched_quotes.empty:
                 # 検索結果をセッションステートに保存（quote, author）
                 st.session_state.quote_options = [(quote, author) for quote, author in zip(matched_quotes['quote'], matched_quotes['author'])]
                 # 最初の選択肢をデフォルトとして選択された名言に設定
@@ -232,38 +233,39 @@ with tab2:
             # Slackに投稿
             if st.session_state.output_text:
                 text_to_slack.send_slack_message(st.session_state.output_text)
-              
+            
             # Clear session state after posting to Slack
             st.session_state.output_text = None
 
         
 
     else:
-      # 手動モードの場合
-      if st.button('あかりちゃんからメッセージをもらう'):
-        # ユーザーの悩みと選択スタイルを取得
-        content_text_to_gpt = st.session_state.content_text_to_gpt
-        selected_type = st.session_state.selected_type
+        # 手動モードの場合
+        if st.button('あかりちゃんからメッセージをもらう'):
+            # ユーザーの悩みと選択スタイルを取得
+            content_text_to_gpt = st.session_state.content_text_to_gpt
+            selected_type = st.session_state.selected_type
 
-        # Initialize session state
-        if 'output_text' not in st.session_state:
-            st.session_state.output_text = None
-           
-        # GPT で励ましのメッセージを生成
-        output_text = meigen_gpt.make_meigen(content_text_to_gpt, selected_type)
-        st.session_state.output_text = output_text
+            # Initialize session state
+            if 'output_text' not in st.session_state:
+                st.session_state.output_text = None
 
-        # 生成されたメッセージを出力
+            # GPT で励ましのメッセージを生成
+            output_text = meigen_gpt.make_meigen(content_text_to_gpt, selected_type)
+            st.session_state.output_text = output_text
+
+            # 生成されたメッセージを出力
+            if st.session_state.output_text:
+                time.sleep(2) # 2秒間待ってからメッセージを表示
+                st.write("あかりちゃんからのメッセージ:", st.session_state.output_text)
+
+    # Slackに投稿するボタンがクリックされた場合
+    if st.button('あかりちゃんからのメッセージをSlackに投稿'):
+        # メッセージが存在する場合、それをSlackに投稿
         if st.session_state.output_text:
-           time.sleep(2) # 2秒間待ってからメッセージを表示
-           st.write("あかりちゃんからのメッセージ:", st.session_state.output_text)
+            slack_channel='#charger_akari'
+            text_to_slack.send_slack_message(st.session_state.output_text, slack_channel)
+            st.write("メッセージがSlackに投稿されました")
 
-      # Slackに投稿するボタンがクリックされた場合
-      if st.button('あかりちゃんからのメッセージをSlackに投稿'):
-          # メッセージが存在する場合、それをSlackに投稿
-          if st.session_state.output_text:
-              text_to_slack.send_slack_message(st.session_state.output_text)
-              st.write("メッセージがSlackに投稿されました")
-
-          # Slackに投稿した後でセッション状態をクリア
-          st.session_state.output_text = None
+        # Slackに投稿した後でセッション状態をクリア
+        st.session_state.output_text = None

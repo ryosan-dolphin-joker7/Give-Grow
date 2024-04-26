@@ -12,7 +12,7 @@ SLACK_API_KEY = os.getenv("SLACK_API_KEY")
 # st.write(SLACK_API_KEY)
 
 # slackにメッセージを飛ばす関数
-def send_slack_message(output_content_text, token=SLACK_API_KEY, channel='#charger_akari'):
+def send_slack_message(output_content_text, slack_channel, token=SLACK_API_KEY):
     """
     Slackの指定されたチャンネルにメッセージを送信します。
 
@@ -24,7 +24,7 @@ def send_slack_message(output_content_text, token=SLACK_API_KEY, channel='#charg
     url = "https://slack.com/api/chat.postMessage"
     headers = {"Authorization": "Bearer " + token}
     data = {
-        'channel': channel,
+        'channel': slack_channel,
         'text': output_content_text
     }
     response = requests.post(url, headers=headers, data=data)

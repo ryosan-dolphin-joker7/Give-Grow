@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
+import io
 
 def draw_multiline_text(draw, text, position, font, text_color, max_width):
     """指定した幅でテキストを改行して描画する"""
@@ -104,11 +105,24 @@ def edited_image(selected_quote, selected_author,index):
 
             submitted = st.form_submit_button("変更を反映")
 
-            if submitted or not st.session_state.get('text_added', False):
-                # 名言を画像に追加
-                image_with_text = add_text_to_image(image.copy(), quote_text, (quote_position_x, quote_position_y), font_name, quote_font_size, quote_text_color, quote_max_width)
-                # 著者を画像に追加
-                image_with_text = add_text_to_image(image_with_text, author_text, (author_position_x, author_position_y), font_name, author_font_size, author_text_color, author_max_width)
-                st.session_state['image_with_text'] = image_with_text
-                st.session_state['text_added'] = True
-                st.image(image_with_text, caption='🧙‍♀️画像が生成されました')
+        if submitted or not st.session_state.get('text_added', False):
+            # 名言を画像に追加
+            image_with_text = add_text_to_image(image.copy(), quote_text, (quote_position_x, quote_position_y), font_name, quote_font_size, quote_text_color, quote_max_width)
+            # 著者を画像に追加
+            image_with_text = add_text_to_image(image_with_text, author_text, (author_position_x, author_position_y), font_name, author_font_size, author_text_color, author_max_width)
+            st.session_state['image_with_text'] = image_with_text
+            st.session_state['text_added'] = True
+            st.image(image_with_text, caption='🧙‍♀️画像が生成されました')
+
+            # 画像データをBytesIOオブジェクトに保存してダウンロード可能にする
+            img_buffer = io.BytesIO()
+            image_with_text.save(img_buffer, format="JPEG")
+            img_buffer.seek(0)
+
+            # ダウンロードボタンを追加
+            st.download_button(
+                label="編集した画像をダウンロード",
+                data=img_buffer,
+                file_name="edited_image.jpg",
+                mime="image/jpeg"
+            )
