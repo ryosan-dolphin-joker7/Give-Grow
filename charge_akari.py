@@ -34,6 +34,7 @@ from services.edited_image import edited_image
 from services.meigen_gpt import make_meigen
 from services.text_to_slack import send_slack_message
 from services.meigen_search import search_quotes,load_quotes_from_db,search_quotes_from_db
+# from services.action_check import action_add
 
 # meigen_gpt        ：テキストをGPTに送る関数です
 # text_to_slack     ：slackにテキストを送る関数です
@@ -71,6 +72,7 @@ if st.button('Slackに投稿'):
         slack_channel='#requests'
         text_to_slack.send_slack_message(requests_text, slack_channel)
         st.write("要望がSlackに投稿されました")
+        action_add()
 
 st.markdown('##')
 
@@ -142,6 +144,9 @@ with tab1:
             
             if st.button("この名言を使う"):
                 st.write('あなたが選んだ名言:', selected_quote[0])
+
+                # slackに選んだ名言を投稿する
+                text_to_slack.send_slack_message(selected_quote[0]+">>"+selected_quote[1], '#meigen')
                 
             if st.button("名言で画像を検索する"):
                 # 画像URLの取得とエラーハンドリング
@@ -231,6 +236,9 @@ with tab2:
                 time.sleep(2) # 2秒間待ってからメッセージを表示
                 st.write("あかりちゃんからのメッセージ:", st.session_state.output_text)
 
+                # slackに悩みを投稿する
+                text_to_slack.send_slack_message(t.session_state.output_text, '#worries')
+
             # Slackに投稿
             if st.session_state.output_text:
                 text_to_slack.send_slack_message(st.session_state.output_text)
@@ -259,6 +267,8 @@ with tab2:
             if st.session_state.output_text:
                 time.sleep(2) # 2秒間待ってからメッセージを表示
                 st.write("あかりちゃんからのメッセージ:", st.session_state.output_text)
+                # slackに悩みを投稿する
+                text_to_slack.send_slack_message(t.session_state.output_text, '#worries')
 
     # Slackに投稿するボタンがクリックされた場合
     if st.button('あかりちゃんからのメッセージをSlackに投稿'):
