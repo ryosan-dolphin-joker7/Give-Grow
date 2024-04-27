@@ -237,7 +237,7 @@ with tab2:
                 st.write("あかりちゃんからのメッセージ:", st.session_state.output_text)
 
                 # slackに悩みを投稿する
-                text_to_slack.send_slack_message(st.session_state.output_text, '#worries')
+                text_to_slack.send_slack_message(st.session_state.content_text_to_gpt, '#worries')
 
             # Slackに投稿
             if st.session_state.output_text:
@@ -268,7 +268,7 @@ with tab2:
                 time.sleep(2) # 2秒間待ってからメッセージを表示
                 st.write("あかりちゃんからのメッセージ:", st.session_state.output_text)
                 # slackに悩みを投稿する
-                text_to_slack.send_slack_message(st.session_state.output_text, '#worries')
+                text_to_slack.send_slack_message(st.session_state.content_text_to_gpt, '#worries')
 
     # Slackに投稿するボタンがクリックされた場合
     if st.button('あかりちゃんからのメッセージをSlackに投稿'):
