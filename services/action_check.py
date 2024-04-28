@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 import pandas as pd
 # スプレッドシートのデータを扱うライブラリをインポート
 import gspread
